@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Andrey “A.I.” Sitnik <andrey@sitnik.ru>
+ * Copyright 2013 Andrey Sitnik <andrey@sitnik.ru>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
