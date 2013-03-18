@@ -4,7 +4,7 @@
   "url": "https://github.com/ai/autohide-battery",
   "uuid": "autohide-battery@sitnik.ru",
   "shell-version": [
-    "3.6"
+    "3.6", "3.7.91", "3.8"
   ],
-  "version": 1
+  "version": 2
 }
