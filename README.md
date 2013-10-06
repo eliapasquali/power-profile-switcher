@@ -5,8 +5,7 @@ if battery is fully charged and AC is connected.
 
 ![Autohide Battery](https://extensions.gnome.org/static/extension-data/screenshots/screenshot_595_1.png)
 
-Also, I recoment [Icon Hider] and [Antisocial Menu] to make top panel
-really clean.
+Also, I recoment [Icon Hider] to make top panel really clean.
 
 [Icon Hider]: https://extensions.gnome.org/extension/351/icon-hider/
 [Antisocial Menu]: https://extensions.gnome.org/extension/547/antisocial-menu/

@@ -1,6 +1,6 @@
 const Lang   = imports.lang;
 const Main   = imports.ui.main;
-const Status = imports.ui.status;
+const UPower = imports.ui.status.power.UPower;
 
 // Main extension API
 function init() {
@@ -53,7 +53,7 @@ let battery = {
     // Check current battery state and hide or show icon
     update: function () {
         this.getDevice(function (device) {
-            if ( device.state == Status.power.UPDeviceState.FULLY_CHARGED ) {
+            if ( device.state == UPower.DeviceState.FULLY_CHARGED ) {
                 this.hide();
             } else {
                 this.show();
@@ -65,37 +65,32 @@ let battery = {
     // Execute `callback` on every battery device
     getDevice: function (callback) {
         this.getBattery(function (proxy) {
-            proxy.GetDevicesRemote(Lang.bind(this, function(result, error) {
-                if ( error ) {
-                    return;
-                }
+            let devices = proxy.GetDevicesSync()[0];
 
-                let devices = result[0];
-                for ( let i = 0; i < devices.length; i++ ) {
-                    let device = {
-                        id:      devices[i][0],
-                        type:    devices[i][1],
-                        icon:    devices[i][2],
-                        percent: devices[i][3],
-                        state:   devices[i][4],
-                        time:    devices[i][5]
-                    };
+            for ( let i = 0; i < devices.length; i++ ) {
+                let device = {
+                    id:      devices[i][0],
+                    type:    devices[i][1],
+                    icon:    devices[i][2],
+                    percent: devices[i][3],
+                    state:   devices[i][4],
+                    time:    devices[i][5]
+                };
 
-                    if ( device.type == Status.power.UPDeviceType.BATTERY ) {
-                        callback.call(this, device);
-                        break;
-                    }
+                if ( device.type == UPower.DeviceKind.BATTERY ) {
+                    callback.call(this, device);
+                    break;
                 }
-            }));
+            }
         });
     },
 
     // Run `callback`, only if battery is avaiable. First argument will be icon,
     // second will be it proxy.
     getBattery: function (callback) {
-        let batteryArea = Main.panel.statusArea.battery;
-        if ( batteryArea ) {
-            callback.call(this, batteryArea._proxy, batteryArea.actor);
+        let menu = Main.panel.statusArea.aggregateMenu;
+        if ( menu && menu._power ) {
+            callback.call(this, menu._power._proxy, menu._power.indicators);
         }
     }
 };
