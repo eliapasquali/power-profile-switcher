@@ -3,7 +3,7 @@
 This is a GNOME Shell extension to hide battery icon in top panel,
 if battery is fully charged and AC is connected.
 
-![Autohide Battery](https://extensions.gnome.org/static/extension-data/screenshots/screenshot_595_1.png)
+![Autohide Battery](http://ai.github.io/autohide-battery/screenshot.png)
 
 Also, I recoment [Icon Hider] to make top panel really clean.
 
