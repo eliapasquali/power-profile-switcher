@@ -65,23 +65,28 @@ let battery = {
     // Execute `callback` on every battery device
     getDevice: function (callback) {
         this.getBattery(function (proxy) {
-            let devices = proxy.GetDevicesSync()[0];
-
-            for ( let i = 0; i < devices.length; i++ ) {
-                let device = {
-                    id:      devices[i][0],
-                    type:    devices[i][1],
-                    icon:    devices[i][2],
-                    percent: devices[i][3],
-                    state:   devices[i][4],
-                    time:    devices[i][5]
-                };
-
-                if ( device.type == UPower.DeviceKind.BATTERY ) {
-                    callback.call(this, device);
-                    break;
+            proxy.GetDevicesRemote(Lang.bind(this, function(result, error) {
+                if ( error ) {
+                    return;
                 }
-            }
+
+                let devices = result[0];
+                for ( let i = 0; i < devices.length; i++ ) {
+                    let device = {
+                        id:      devices[i][0],
+                        type:    devices[i][1],
+                        icon:    devices[i][2],
+                        percent: devices[i][3],
+                        state:   devices[i][4],
+                        time:    devices[i][5]
+                    };
+
+                    if ( device.type == UPower.DeviceKind.BATTERY ) {
+                        callback.call(this, device);
+                        break;
+                    }
+                }
+            }));
         });
     },
 
