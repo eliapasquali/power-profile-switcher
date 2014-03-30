@@ -1,22 +1,22 @@
 const Lang   = imports.lang;
 const Main   = imports.ui.main;
 const UPower = imports.ui.status.power.UPower;
+const ShellVersion = getGnomeVersion();
 
-// Main extension API
-function init() {
-};
-function enable() {
-    battery.bind().update();
-};
-function disable() {
-    battery.unbind().show();
+//Gnome Version Detection as Int (Future Proof)
+function getGnomeVersion(){
+    var VersionStr = imports.misc.config.PACKAGE_VERSION,
+        VersionArray = VersionStr.split('.').map(function (x) { 
+            return +x; 
+        });
+
+    return VersionArray[0] + (VersionArray[1]*.01);
 };
 
 // Namespace for extension logic
 let battery = {
     // Watcher ID to disable listening
     watching: null,
-
     // Start listen to battery status changes
     bind: function () {
         this.getBattery(function (proxy) {
@@ -52,18 +52,32 @@ let battery = {
 
     // Check current battery state and hide or show icon
     update: function () {
-        this.getDevice(function (device) {
-            if ( device.state == UPower.DeviceState.FULLY_CHARGED ) {
-                this.hide();
-            } else {
-                this.show();
-            }
-        });
+        if(ShellVersion >= 3.12){
+            this.getBattery(function (proxy) {
+                var batteryPowered = UPower.DeviceKind.BATTERY,
+                    fullyCharged = UPower.DeviceState.FULLY_CHARGED;
+
+                if (proxy.State ==  fullyCharged && proxy.Type == batteryPowered) {
+                    this.hide();
+                } else {
+                    this.show();
+                }
+            });
+        } else {
+            this.getDevice(function (device) {
+                if ( device.state == UPower.DeviceState.FULLY_CHARGED ) {
+                    this.hide();
+                } else {
+                    this.show();
+                }
+            });
+        }
+
         return this;
     },
 
     // Execute `callback` on every battery device
-    getDevice: function (callback) {
+    getDevice: function (callback) {    
         this.getBattery(function (proxy) {
             proxy.GetDevicesRemote(Lang.bind(this, function(result, error) {
                 if ( error ) {
@@ -99,3 +113,16 @@ let battery = {
         }
     }
 };
+
+//Enable
+function enable() {
+    battery.bind().update();
+};
+
+//Disable
+function disable() {
+    battery.unbind().show();
+};
+
+// Main extension API
+function init(){};
