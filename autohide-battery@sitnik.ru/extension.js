@@ -1,22 +1,25 @@
 const Lang   = imports.lang;
 const Main   = imports.ui.main;
 const UPower = imports.ui.status.power.UPower;
-const ShellVersion = getGnomeVersion();
 
-//Gnome Version Detection as Int (Future Proof)
-function getGnomeVersion(){
-    var VersionStr = imports.misc.config.PACKAGE_VERSION,
-        VersionArray = VersionStr.split('.').map(function (x) { 
-            return +x; 
-        });
+// Main extension API
+function init() { };
 
-    return VersionArray[0] + (VersionArray[1]*.01);
+//Enable
+function enable() {
+    battery.bind().update();
+};
+
+//Disable
+function disable() {
+    battery.unbind().show();
 };
 
 // Namespace for extension logic
 let battery = {
     // Watcher ID to disable listening
     watching: null,
+
     // Start listen to battery status changes
     bind: function () {
         this.getBattery(function (proxy) {
@@ -50,9 +53,15 @@ let battery = {
         return this;
     },
 
+    // Return GNOME Shell version
+    shell: function () {
+        var parts = imports.misc.config.PACKAGE_VERSION.split('.')
+        return parseFloat(parts[0] + '.' + parts[1]);
+    },
+
     // Check current battery state and hide or show icon
     update: function () {
-        if(ShellVersion >= 3.12){
+        if ( this.shell() >= 3.12 ) {
             this.getBattery(function (proxy) {
                 var batteryPowered = UPower.DeviceKind.BATTERY,
                     fullyCharged = UPower.DeviceState.FULLY_CHARGED;
@@ -77,7 +86,7 @@ let battery = {
     },
 
     // Execute `callback` on every battery device
-    getDevice: function (callback) {    
+    getDevice: function (callback) {
         this.getBattery(function (proxy) {
             proxy.GetDevicesRemote(Lang.bind(this, function(result, error) {
                 if ( error ) {
@@ -113,16 +122,3 @@ let battery = {
         }
     }
 };
-
-//Enable
-function enable() {
-    battery.bind().update();
-};
-
-//Disable
-function disable() {
-    battery.unbind().show();
-};
-
-// Main extension API
-function init(){};
