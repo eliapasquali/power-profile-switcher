@@ -1,10 +1,12 @@
 # Autohide Battery
 
+<img src="http://ai.github.io/autohide-battery/screenshot.png"
+     alt="Autohide Battery" width="200" height="200" align="right" />
+
 GNOME Shell extension to hide battery icon, if battery is fully charged
 and AC is connected.
 
-<img src="http://ai.github.io/autohide-battery/screenshot.png"
-     alt="Autohide Battery" width="200" height="200" />
+[<img src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true" height="100">](https://extensions.gnome.org/extension/1475/battery-time/)
 
 Also, I recommend [Icon Hider] to make top panel really clean.
 
