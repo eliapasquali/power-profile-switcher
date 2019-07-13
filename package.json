@@ -2,8 +2,8 @@
   "name": "autohide-battery",
   "private": true,
   "scripts": {
-    "test": "eslint autohide-battery@sitnik.ru/*.js",
-    "build": "zip autohide-battery@sitnik.ru.zip autohide-battery@sitnik.ru/*"
+    "test": "eslint *.js",
+    "build": "zip autohide-battery@sitnik.ru.zip *.js metadata.json"
   },
   "repository": "ai/autohide-battery",
   "author": "Andrey Sitnik <andrey@sitnik.ru>",
