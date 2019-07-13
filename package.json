@@ -5,7 +5,7 @@
     "test": "eslint *.js",
     "clean": "rimraf autohide-battery@sitnik.ru.zip",
     "build": "yarn clean && zip autohide-battery@sitnik.ru.zip *.js metadata.json",
-    "install": "./install.sh"
+    "local": "./install.sh"
   },
   "repository": "ai/autohide-battery",
   "author": "Andrey Sitnik <andrey@sitnik.ru>",
