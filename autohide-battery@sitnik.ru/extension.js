@@ -2,16 +2,18 @@ const UPower = imports.ui.status.power.UPower
 const Main = imports.ui.main
 const Lang = imports.lang
 
+/* exported init, enable, disable */
+
 // Main extension API
-function init() { }
+function init () { }
 
 // Enable
-function enable() {
+function enable () {
   battery.bind().update()
 }
 
 // Disable
-function disable() {
+function disable () {
   battery.unbind().show()
 }
 
@@ -36,7 +38,7 @@ let battery = {
   },
 
   // Show battery icon in status area
-  show: function () {
+  show () {
     this.getBattery((proxy, icon) => {
       icon.show()
     })

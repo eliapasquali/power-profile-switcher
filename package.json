@@ -1,0 +1,31 @@
+{
+  "name": "autohide-battery",
+  "private": true,
+  "scripts": {
+    "test": "eslint autohide-battery@sitnik.ru/*.js"
+  },
+  "repository": "ai/autohide-battery",
+  "author": "Andrey Sitnik <andrey@sitnik.ru>",
+  "license": "MIT",
+  "devDependencies": {
+    "@logux/eslint-config": "^29.0.1",
+    "eslint": "^6.0.1",
+    "eslint-config-standard": "^13.0.1",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jest": "^22.7.2",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-prefer-let": "^1.0.1",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-security": "^1.4.0",
+    "eslint-plugin-standard": "^4.0.0"
+  },
+  "eslintConfig": {
+    "extends": "@logux/eslint-config/node",
+    "globals": {
+      "imports": false
+    },
+    "env": {
+      "node": false
+    }
+  }
+}
