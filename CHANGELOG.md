@@ -1,5 +1,8 @@
 # Change Log
 
+## 13
+* Simplify code by removing objects.
+
 ## 12
 * Hide icon on 100% charge instead of “fully charged” status.
 * Remove GNOME <= 3.10 support.
