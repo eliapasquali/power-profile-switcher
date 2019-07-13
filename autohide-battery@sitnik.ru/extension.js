@@ -1,124 +1,74 @@
-const Lang   = imports.lang;
-const Main   = imports.ui.main;
-const UPower = imports.ui.status.power.UPower;
+const UPower = imports.ui.status.power.UPower
+const Main = imports.ui.main
+const Lang = imports.lang
 
 // Main extension API
-function init() { };
+function init() { }
 
-//Enable
+// Enable
 function enable() {
-    battery.bind().update();
-};
+  battery.bind().update()
+}
 
-//Disable
+// Disable
 function disable() {
-    battery.unbind().show();
-};
+  battery.unbind().show()
+}
 
 // Namespace for extension logic
 let battery = {
-    // Watcher ID to disable listening
-    watching: null,
+  // Watcher ID to disable listening
+  watching: null,
 
-    // Start listen to battery status changes
-    bind: function () {
-        this.getBattery(function (proxy) {
-            let update = Lang.bind(this, this.update);
-            this.watching = proxy.connect('g-properties-changed', update);
-        });
-        return this;
-    },
+  // Start listen to battery status changes
+  bind () {
+    this.getBattery(proxy => {
+      let update = Lang.bind(this, this.update)
+      this.watching = proxy.connect('g-properties-changed', update)
+    })
+  },
 
-    // Stop listen to battery status changes
-    unbind: function () {
-        this.getBattery(function (proxy) {
-            proxy.disconnect(this.watching);
-        });
-        return this;
-    },
+  // Stop listen to battery status changes
+  unbind () {
+    this.getBattery(proxy => {
+      proxy.disconnect(this.watching)
+    })
+  },
 
-    // Show battery icon in status area
-    show: function () {
-        this.getBattery(function (proxy, icon) {
-            icon.show();
-        });
-        return this;
-    },
+  // Show battery icon in status area
+  show: function () {
+    this.getBattery((proxy, icon) => {
+      icon.show()
+    })
+  },
 
-    // Hide battery icon in status area
-    hide: function () {
-        this.getBattery(function (proxy, icon) {
-            icon.hide();
-        });
-        return this;
-    },
+  // Hide battery icon in status area
+  hide () {
+    this.getBattery((proxy, icon) => {
+      icon.hide()
+    })
+  },
 
-    // Return GNOME Shell version
-    shell: function () {
-        var parts = imports.misc.config.PACKAGE_VERSION.split('.')
-        return parseFloat(parts[0] + '.' + parts[1]);
-    },
+  // Check current battery state and hide or show icon
+  update () {
+    this.getBattery(proxy => {
+      let batteryPowered = UPower.DeviceKind.BATTERY
+      let fullyCharged = UPower.DeviceState.FULLY_CHARGED
 
-    // Check current battery state and hide or show icon
-    update: function () {
-        if ( this.shell() >= 3.12 ) {
-            this.getBattery(function (proxy) {
-                var batteryPowered = UPower.DeviceKind.BATTERY,
-                    fullyCharged = UPower.DeviceState.FULLY_CHARGED;
+      if (proxy.State === fullyCharged && proxy.Type === batteryPowered) {
+        this.hide()
+      } else {
+        this.show()
+      }
+    })
+  },
 
-                if (proxy.State ==  fullyCharged && proxy.Type == batteryPowered) {
-                    this.hide();
-                } else {
-                    this.show();
-                }
-            });
-        } else {
-            this.getDevice(function (device) {
-                if ( device.state == UPower.DeviceState.FULLY_CHARGED ) {
-                    this.hide();
-                } else {
-                    this.show();
-                }
-            });
-        }
-
-        return this;
-    },
-
-    // Execute `callback` on every battery device
-    getDevice: function (callback) {
-        this.getBattery(function (proxy) {
-            proxy.GetDevicesRemote(Lang.bind(this, function(result, error) {
-                if ( error ) {
-                    return;
-                }
-
-                let devices = result[0];
-                for ( let i = 0; i < devices.length; i++ ) {
-                    let device = {
-                        id:      devices[i][0],
-                        type:    devices[i][1],
-                        icon:    devices[i][2],
-                        percent: devices[i][3],
-                        state:   devices[i][4],
-                        time:    devices[i][5]
-                    };
-
-                    if ( device.type == UPower.DeviceKind.BATTERY ) {
-                        callback.call(this, device);
-                        break;
-                    }
-                }
-            }));
-        });
-    },
-
-    // Run `callback`, only if battery is avaiable. First argument will be icon,
-    // second will be it proxy.
-    getBattery: function (callback) {
-        let menu = Main.panel.statusArea.aggregateMenu;
-        if ( menu && menu._power ) {
-            callback.call(this, menu._power._proxy, menu._power.indicators);
-        }
+  // Run `callback`, only if battery is avaiable. First argument will be icon,
+  // second will be it proxy.
+  getBattery (callback) {
+    let menu = Main.panel.statusArea.aggregateMenu
+    if (menu && menu._power) {
+      callback(menu._power._proxy, menu._power.indicators)
     }
-};
+  }
+}
