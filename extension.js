@@ -1,50 +1,46 @@
 const UPower = imports.ui.status.power.UPower
 const Main = imports.ui.main
-const Lang = imports.lang
 
-let battery = {
-  watching: null,
+let watching
 
-  bind () {
-    this.getBattery(proxy => {
-      let update = Lang.bind(this, this.update)
-      this.watching = proxy.connect('g-properties-changed', update)
-    })
-  },
+function bind () {
+  getBattery(proxy => {
+    watching = proxy.connect('g-properties-changed', update)
+  })
+}
 
-  unbind () {
-    this.getBattery(proxy => {
-      proxy.disconnect(this.watching)
-    })
-  },
+function unbind () {
+  getBattery(proxy => {
+    proxy.disconnect(watching)
+  })
+}
 
-  show () {
-    this.getBattery((proxy, icon) => {
-      icon.show()
-    })
-  },
+function show () {
+  getBattery((proxy, icon) => {
+    icon.show()
+  })
+}
 
-  hide () {
-    this.getBattery((proxy, icon) => {
-      icon.hide()
-    })
-  },
+function hide () {
+  getBattery((proxy, icon) => {
+    icon.hide()
+  })
+}
 
-  update () {
-    this.getBattery(p => {
-      if (p.Type === UPower.DeviceKind.BATTERY && p.Percentage === 100) {
-        this.hide()
-      } else {
-        this.show()
-      }
-    })
-  },
-
-  getBattery (callback) {
-    let menu = Main.panel.statusArea.aggregateMenu
-    if (menu && menu._power) {
-      callback(menu._power._proxy, menu._power.indicators)
+function update () {
+  getBattery(proxy => {
+    if (proxy.Type === UPower.DeviceKind.BATTERY && proxy.Percentage === 100) {
+      hide()
+    } else {
+      show()
     }
+  })
+}
+
+function getBattery (callback) {
+  let menu = Main.panel.statusArea.aggregateMenu
+  if (menu && menu._power) {
+    callback(menu._power._proxy, menu._power.indicators)
   }
 }
 
@@ -53,9 +49,11 @@ let battery = {
 function init () { }
 
 function enable () {
-  battery.bind().update()
+  bind()
+  update()
 }
 
 function disable () {
-  battery.unbind().show()
+  unbind()
+  show()
 }
