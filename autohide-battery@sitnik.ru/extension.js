@@ -53,11 +53,8 @@ let battery = {
 
   // Check current battery state and hide or show icon
   update () {
-    this.getBattery(proxy => {
-      let batteryPowered = UPower.DeviceKind.BATTERY
-      let fullyCharged = UPower.DeviceState.FULLY_CHARGED
-
-      if (proxy.State === fullyCharged && proxy.Type === batteryPowered) {
+    this.getBattery(p => {
+      if (p.Type === UPower.DeviceKind.BATTERY && p.Percentage === 100) {
         this.hide()
       } else {
         this.show()
