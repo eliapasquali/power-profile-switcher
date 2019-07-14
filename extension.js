@@ -29,7 +29,9 @@ function hide () {
 
 function update () {
   getBattery(proxy => {
-    if (proxy.Type === UPower.DeviceKind.BATTERY && proxy.Percentage === 100) {
+    let isBattery = proxy.Type === UPower.DeviceKind.BATTERY
+    let notDischarging = proxy.State !== UPower.DeviceState.DISCHARGING
+    if (isBattery && notDischarging && proxy.Percentage === 100) {
       hide()
     } else {
       show()
