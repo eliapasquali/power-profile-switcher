@@ -1,5 +1,8 @@
 # Change Log
 
+## 14
+* Improve behaviour in rare edge cases.
+
 ## 13
 * Simplify code by removing objects.
 
