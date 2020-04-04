@@ -50,8 +50,6 @@ function getBattery (callback) {
   }
 }
 
-/* exported init, enable, disable */
-
 function init () { }
 
 function enable () {
