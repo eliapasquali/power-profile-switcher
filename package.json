@@ -3,9 +3,9 @@
   "private": true,
   "scripts": {
     "test": "eslint *.js",
-    "clean": "rimraf autohide-battery@sitnik.ru.zip",
-    "build": "yarn clean && zip autohide-battery@sitnik.ru.zip *.js metadata.json",
-    "local": "./install.sh"
+    "clean": "rimraf *.zip",
+    "build": "yarn clean && gnome-extensions pack ./",
+    "local": "yarn build && gnome-extensions install -f *.zip"
   },
   "repository": "ai/autohide-battery",
   "author": "Andrey Sitnik <andrey@sitnik.ru>",

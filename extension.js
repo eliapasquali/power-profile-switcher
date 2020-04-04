@@ -38,6 +38,8 @@ function getBattery (callback) {
   }
 }
 
+/* exported enable, disable */
+
 function enable () {
   getBattery(proxy => {
     watching = proxy.connect('g-properties-changed', update)
