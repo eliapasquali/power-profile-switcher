@@ -3,18 +3,6 @@ const Main = imports.ui.main
 
 let watching
 
-function bind () {
-  getBattery(proxy => {
-    watching = proxy.connect('g-properties-changed', update)
-  })
-}
-
-function unbind () {
-  getBattery(proxy => {
-    proxy.disconnect(watching)
-  })
-}
-
 function show () {
   getBattery((proxy, icon) => {
     icon.show()
@@ -50,14 +38,16 @@ function getBattery (callback) {
   }
 }
 
-function init () { }
-
 function enable () {
-  bind()
+  getBattery(proxy => {
+    watching = proxy.connect('g-properties-changed', update)
+  })
   update()
 }
 
 function disable () {
-  unbind()
+  getBattery(proxy => {
+    proxy.disconnect(watching)
+  })
   show()
 }
