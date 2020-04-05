@@ -1,5 +1,8 @@
 # Change Log
 
+## 15
+* Add settings to set charging threshold.
+
 ## 14
 * Improve behaviour in rare edge cases.
 
