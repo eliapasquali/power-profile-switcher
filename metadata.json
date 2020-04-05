@@ -18,5 +18,6 @@
     "3.34",
     "3.36"
   ],
+  "gettext-domain": "autohide-battery",
   "version": 14
 }

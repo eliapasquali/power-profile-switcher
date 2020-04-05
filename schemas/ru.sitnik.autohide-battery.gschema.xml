@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="ru.sitnik.autohide-battery" path="/ru/sitnik/autohide-battery/">
+    <key name="hide-on" type="i">
+      <summary>Minimum battery level to hide icon</summary>
+      <default>100</default>
+    </key>
+  </schema>
+</schemalist>

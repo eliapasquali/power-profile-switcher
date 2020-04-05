@@ -31,7 +31,7 @@
     },
     "rules": {
       "no-unused-vars": ["error", {
-        "varsIgnorePattern": "^(init|enable|disable)$"
+        "varsIgnorePattern": "^(init|enable|disable|buildPrefsWidget)$"
       }]
     },
     "env": {

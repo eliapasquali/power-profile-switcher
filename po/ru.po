@@ -1,0 +1,26 @@
+# Russian translations for autohide-battery package.
+# This file is distributed under the same license
+# as the autohide-battery package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-05 17:59-0400\n"
+"PO-Revision-Date: 2020-04-05 16:47-0400\n"
+"Last-Translator: Andrey Sitnik <andrey@sitnik.ru>\n"
+"Language-Team: none\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: prefs.js:20
+msgid "Hide on battery level above"
+msgstr "Скрывать иконку при заряде больше"
+
+#: prefs.js:33
+msgid "If you changed maximum charging level to extend battery life"
+msgstr "Если вы ограничили уровень заряда для продления срока службы батареи"
