@@ -1,5 +1,8 @@
 # Change Log
 
+## 16
+* Update GNOME supported list.
+
 ## 15
 * Add settings to set charging threshold.
 
