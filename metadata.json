@@ -4,17 +4,6 @@
   "url": "https://github.com/ai/autohide-battery",
   "uuid": "autohide-battery@sitnik.ru",
   "shell-version": [
-    "3.12",
-    "3.14",
-    "3.16",
-    "3.18",
-    "3.20",
-    "3.22",
-    "3.24",
-    "3.26",
-    "3.28",
-    "3.30",
-    "3.32",
     "3.34",
     "3.36"
   ],
