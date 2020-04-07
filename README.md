@@ -1,7 +1,6 @@
 # Autohide Battery
 
-<img src="./example.png" alt="Autohide Battery"
-     width="250" height="250" align="right" />
+<img src="./example.png" alt="Autohide Battery" width="250" align="right" />
 
 GNOME Shell extension to hide battery icon, if battery is fully charged
 and AC is connected.
