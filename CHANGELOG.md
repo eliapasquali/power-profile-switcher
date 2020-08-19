@@ -1,5 +1,8 @@
 # Change Log
 
+## 17
+* Fixed deprecation warning.
+
 ## 16
 * Update GNOME supported list.
 
