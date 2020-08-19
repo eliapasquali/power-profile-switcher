@@ -11,17 +11,18 @@
   "author": "Andrey Sitnik <andrey@sitnik.ru>",
   "license": "MIT",
   "devDependencies": {
-    "@logux/eslint-config": "^36.1.2",
-    "eslint": "^6.8.0",
+    "@logux/eslint-config": "^40.0.3",
+    "eslint": "^7.7.0",
     "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-jest": "^23.8.2",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jest": "^23.20.0",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prefer-let": "^1.0.1",
+    "eslint-plugin-prefer-let": "^1.0.2",
+    "eslint-plugin-prettierx": "^0.14.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-security": "^1.4.0",
     "eslint-plugin-standard": "^4.0.1",
-    "eslint-plugin-unicorn": "^18.0.1",
+    "eslint-plugin-unicorn": "^21.0.0",
     "rimraf": "^3.0.2"
   },
   "eslintConfig": {
@@ -30,9 +31,12 @@
       "imports": false
     },
     "rules": {
-      "no-unused-vars": ["error", {
-        "varsIgnorePattern": "^(init|enable|disable|buildPrefsWidget)$"
-      }]
+      "no-unused-vars": [
+        "error",
+        {
+          "varsIgnorePattern": "^(init|enable|disable|buildPrefsWidget)$"
+        }
+      ]
     },
     "env": {
       "node": false
