@@ -38,7 +38,7 @@ function update () {
 function getBattery (callback) {
   let menu = Main.panel.statusArea.aggregateMenu
   if (menu && menu._power) {
-    callback(menu._power._proxy, menu._power.indicators)
+    callback(menu._power._proxy, menu._power)
   }
 }
 
