@@ -4,11 +4,11 @@ const Gtk = imports.gi.Gtk
 
 let _ = Gettext.domain('autohide-battery').gettext
 
-function init () {
+function init() {
   ExtensionUtils.initTranslations('autohide-battery')
 }
 
-function buildPrefsWidget () {
+function buildPrefsWidget() {
   let settings = ExtensionUtils.getSettings('ru.sitnik.autohide-battery')
 
   let grid = new Gtk.Grid({

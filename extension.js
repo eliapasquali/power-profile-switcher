@@ -6,19 +6,19 @@ let settings = ExtensionUtils.getSettings('ru.sitnik.autohide-battery')
 
 let batteryWatching, settingsWatching
 
-function show () {
+function show() {
   getBattery((proxy, icon) => {
     icon.show()
   })
 }
 
-function hide () {
+function hide() {
   getBattery((proxy, icon) => {
     icon.hide()
   })
 }
 
-function update () {
+function update() {
   let hideOn = settings.get_int('hide-on')
   getBattery(proxy => {
     let isDischarging = proxy.State === UPower.DeviceState.DISCHARGING
@@ -35,14 +35,14 @@ function update () {
   })
 }
 
-function getBattery (callback) {
+function getBattery(callback) {
   let menu = Main.panel.statusArea.aggregateMenu
   if (menu && menu._power) {
     callback(menu._power._proxy, menu._power)
   }
 }
 
-function enable () {
+function enable() {
   settingsWatching = settings.connect('changed::hide-on', update)
   getBattery(proxy => {
     batteryWatching = proxy.connect('g-properties-changed', update)
@@ -50,7 +50,7 @@ function enable () {
   update()
 }
 
-function disable () {
+function disable() {
   settings.disconnect(settingsWatching)
   getBattery(proxy => {
     proxy.disconnect(batteryWatching)
