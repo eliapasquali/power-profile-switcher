@@ -12,7 +12,10 @@ function buildPrefsWidget () {
   let settings = ExtensionUtils.getSettings('ru.sitnik.autohide-battery')
 
   let grid = new Gtk.Grid({
-    margin: 24,
+    margin_top: 24,
+    margin_bottom: 24,
+    margin_start: 24,
+    margin_end: 24,
     column_spacing: 24,
     row_spacing: 12,
     halign: Gtk.Align.CENTER
@@ -44,7 +47,5 @@ function buildPrefsWidget () {
   settings.connect('changed::hide-on', () => {
     field.set_value(settings.get_int('hide-on'))
   })
-
-  grid.show_all()
   return grid
 }
