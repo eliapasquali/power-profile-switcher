@@ -1,5 +1,8 @@
 # Change Log
 
+## 18
+* Added GNOME 40 support (by @RuiGuilherme).
+
 ## 17
 * Fixed deprecation warning.
 
