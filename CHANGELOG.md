@@ -1,5 +1,8 @@
 # Change Log
 
+## 20
+* Do not load settings if extension was not initialized.
+
 ## 19
 * Added Dutch translation (by Heimen Stoffels).
 
