@@ -1,5 +1,8 @@
 # Change Log
 
+## 19
+* Added Dutch translation (by Heimen Stoffels).
+
 ## 18
 * Added GNOME 40 support (by @RuiGuilherme).
 
