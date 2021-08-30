@@ -1,0 +1,29 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-05 18:11-0400\n"
+"PO-Revision-Date: 2021-08-30 14:52+0000\n"
+"Last-Translator: Andy Ivaniuk <andy.ivanyuk@gmail.com>\n"
+"Language-Team: Ukrainian <https://hosted.weblate.org/projects/"
+"autohide-battery/settings/uk/>\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.8.1-dev\n"
+
+#: prefs.js:20
+msgid "Hide on battery level above"
+msgstr "Приховувати іконку при заряді більше"
+
+#: prefs.js:33
+msgid "If you changed maximum charging level to extend battery life"
+msgstr "Якщо ви обмежили рівень заряду для продовження терміну служби батареї"
