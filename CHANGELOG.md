@@ -1,5 +1,14 @@
 # Change Log
 
+## 21
+* Added Belarusian translation (by Ilya Ryabchinski).
+* Added German trabslation (by Svetlana Chervyakova).
+* Added French translation (by J. Lavoie).
+* Added Japanese translation (by Marat Vyshegorodtsev).
+* Added Lithuanian translation (by Gediminas Murauskas).
+* Added Norwegian Bokmål translation (by Allan Nordhøy).
+* Added Ukrainian translation (by Andy Ivaniuk).
+
 ## 20
 * Do not load settings if extension was not initialized.
 
