@@ -2,7 +2,7 @@ const ExtensionUtils = imports.misc.extensionUtils
 const UPower = imports.ui.status.power.UPower
 const Main = imports.ui.main
 
-let batteryWatching, settingsWatching, settings
+let batteryWatching, settingsWatching, settings, disabled
 
 function show() {
   getBattery((proxy, icon) => {
@@ -41,18 +41,24 @@ function getBattery(callback) {
 }
 
 function enable() {
-  settings = ExtensionUtils.getSettings('ru.sitnik.autohide-battery')
-  settingsWatching = settings.connect('changed::hide-on', update)
-  getBattery(proxy => {
-    batteryWatching = proxy.connect('g-properties-changed', update)
-  })
-  update()
+  if (disabled) {
+    disabled = false
+    settings = ExtensionUtils.getSettings('ru.sitnik.autohide-battery')
+    settingsWatching = settings.connect('changed::hide-on', update)
+    getBattery(proxy => {
+      batteryWatching = proxy.connect('g-properties-changed', update)
+    })
+    update()
+  }
 }
 
 function disable() {
-  if (settings) settings.disconnect(settingsWatching)
-  getBattery(proxy => {
-    proxy.disconnect(batteryWatching)
-  })
-  show()
+  if(Main.sessionMode.currentMode != 'unlock-dialog') {
+    disabled = true
+    if (settings) settings.disconnect(settingsWatching)
+    getBattery(proxy => {
+      proxy.disconnect(batteryWatching)
+    })
+    show()
+  }
 }
