@@ -40,6 +40,10 @@ function getBattery(callback) {
   }
 }
 
+function init() {
+  disabled = true
+}
+
 function enable() {
   if (disabled) {
     disabled = false
