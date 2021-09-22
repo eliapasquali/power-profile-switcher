@@ -1,5 +1,8 @@
 # Change Log
 
+## 22
+* Fix lock screen support (by @oxayotl).
+
 ## 21
 * Added Belarusian translation (by Ilya Ryabchinski).
 * Added German trabslation (by Svetlana Chervyakova).

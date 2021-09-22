@@ -5,5 +5,5 @@
   "uuid": "autohide-battery@sitnik.ru",
   "shell-version": ["40", "41"],
   "gettext-domain": "autohide-battery",
-  "version": 21
+  "version": 22
 }
