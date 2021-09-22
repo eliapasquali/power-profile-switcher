@@ -1,5 +1,7 @@
 # Change Log
 
+## 23
+
 ## 22
 * Fix lock screen support (by @oxayotl).
 
