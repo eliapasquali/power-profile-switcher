@@ -57,7 +57,7 @@ function enable() {
 }
 
 function disable() {
-  if(Main.sessionMode.currentMode != 'unlock-dialog') {
+  if (Main.sessionMode.currentMode !== 'unlock-dialog') {
     disabled = true
     if (settings) settings.disconnect(settingsWatching)
     getBattery(proxy => {
