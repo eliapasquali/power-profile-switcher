@@ -3,21 +3,21 @@
   "private": true,
   "scripts": {
     "test": "eslint *.js",
-    "clean": "rimraf *.zip",
-    "build": "yarn clean && gnome-extensions pack ./",
-    "local": "yarn build && gnome-extensions install -f *.zip"
+    "clean": "rm -Rf *.zip",
+    "build": "pnpm clean && gnome-extensions pack ./",
+    "local": "pnpm build && gnome-extensions install -f *.zip"
   },
   "repository": "ai/autohide-battery",
   "author": "Andrey Sitnik <andrey@sitnik.ru>",
   "license": "MIT",
   "devDependencies": {
-    "@logux/eslint-config": "^46.1.0",
-    "eslint": "^8.2.0",
+    "@logux/eslint-config": "^46.1.1",
+    "eslint": "^8.11.0",
     "eslint-config-standard": "^16.0.3",
-    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prefer-let": "^3.0.1",
-    "eslint-plugin-promise": "^5.1.1"
+    "eslint-plugin-promise": "^6.0.0"
   },
   "prettier": {
     "arrowParens": "avoid",
