@@ -1,10 +1,13 @@
 # Change Log
 
+## 24
+* Added GNOME 42 support.
+
 ## 23
-* Fix bug with uninitialized variable (by @oxayotl).
+* Fixed bug with uninitialized variable (by @oxayotl).
 
 ## 22
-* Fix lock screen support (by @oxayotl).
+* Fixed lock screen support (by @oxayotl).
 
 ## 21
 * Added Belarusian translation (by Ilya Ryabchinski).
