@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "test": "eslint *.js",
-    "clean": "rm -Rf *.zip",
+    "clean": "rm -f *.zip",
     "build": "pnpm clean && gnome-extensions pack ./",
     "local": "pnpm build && gnome-extensions install -f *.zip"
   },
