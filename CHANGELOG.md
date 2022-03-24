@@ -1,6 +1,7 @@
 # Change Log
 
 ## 23
+* Fix bug with uninitialized variable (by @oxayotl).
 
 ## 22
 * Fix lock screen support (by @oxayotl).
