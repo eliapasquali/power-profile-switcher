@@ -19,6 +19,7 @@ function hide() {
 function update() {
   let hideOn = settings.get_int('hide-on')
   getBattery(proxy => {
+    if (!Power.UPower) return
     let isDischarging = proxy.State === Power.UPower.DeviceState.DISCHARGING
     let isFullyCharged = proxy.State === Power.UPower.DeviceState.FULLY_CHARGED
     if (proxy.Type !== Power.UPower.DeviceKind.BATTERY) {
