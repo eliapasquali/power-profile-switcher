@@ -1,5 +1,5 @@
 const ExtensionUtils = imports.misc.extensionUtils
-const UPower = imports.ui.status.power.UPower
+const Power = imports.ui.status.power
 const Main = imports.ui.main
 
 let batteryWatching, settingsWatching, settings, disabled
@@ -19,9 +19,9 @@ function hide() {
 function update() {
   let hideOn = settings.get_int('hide-on')
   getBattery(proxy => {
-    let isDischarging = proxy.State === UPower.DeviceState.DISCHARGING
-    let isFullyCharged = proxy.State === UPower.DeviceState.FULLY_CHARGED
-    if (proxy.Type !== UPower.DeviceKind.BATTERY) {
+    let isDischarging = proxy.State === Power.UPower.DeviceState.DISCHARGING
+    let isFullyCharged = proxy.State === Power.UPower.DeviceState.FULLY_CHARGED
+    if (proxy.Type !== Power.UPower.DeviceKind.BATTERY) {
       show()
     } else if (isFullyCharged) {
       hide()
