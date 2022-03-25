@@ -1,5 +1,8 @@
 # Change Log
 
+## 26
+* Fixed extension initialization (by Albert Hopkins).
+
 ## 25
 * Fixed GNOME 42 support (by Albert Hopkins).
 
