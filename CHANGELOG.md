@@ -1,5 +1,8 @@
 # Change Log
 
+## 25
+* Fixed GNOME 42 support (by Albert Hopkins).
+
 ## 24
 * Added GNOME 42 support.
 
