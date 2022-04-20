@@ -1,5 +1,8 @@
 # Change Log
 
+## 27
+* Added Catalan translation (by Maite Guix).
+
 ## 26
 * Fixed extension initialization (by Albert Hopkins).
 
