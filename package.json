@@ -11,8 +11,8 @@
   "author": "Andrey Sitnik <andrey@sitnik.ru>",
   "license": "MIT",
   "devDependencies": {
-    "@logux/eslint-config": "^47.0.0",
-    "eslint": "^8.13.0",
+    "@logux/eslint-config": "^47.2.0",
+    "eslint": "^8.14.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.1.0",
