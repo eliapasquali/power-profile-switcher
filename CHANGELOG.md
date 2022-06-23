@@ -1,5 +1,9 @@
 # Change Log
 
+## 28
+* Added Simplified Chinese translation (by LiuliPack).
+* Added Spanish translation.
+
 ## 27
 * Added Catalan translation (by Maite Guix).
 
