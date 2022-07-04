@@ -1,5 +1,8 @@
 # Change Log
 
+## 29
+* Added Polish translation (by Maciej Klupp).
+
 ## 28
 * Added Simplified Chinese translation (by LiuliPack).
 * Added Spanish translation.
