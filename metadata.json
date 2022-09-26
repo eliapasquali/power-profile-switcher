@@ -3,7 +3,7 @@
   "description": "Hide battery icon in top panel, if battery is fully charged and AC is connected",
   "url": "https://github.com/ai/autohide-battery",
   "uuid": "autohide-battery@sitnik.ru",
-  "shell-version": ["40", "41", "42"],
+  "shell-version": ["40", "41", "42", "43"],
   "gettext-domain": "autohide-battery",
   "version": 29
 }
