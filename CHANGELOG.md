@@ -1,5 +1,8 @@
 # Change Log
 
+## 30
+* Added GNOME 43 support.
+
 ## 29
 * Added Polish translation (by Maciej Klupp).
 
