@@ -1,5 +1,8 @@
 # Change Log
 
+## 31
+* Added Korean translation (by Hoseok Seo).
+
 ## 30
 * Added GNOME 43 support.
 
