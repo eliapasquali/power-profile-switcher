@@ -39,8 +39,7 @@ function getBattery(callback) {
     if (system._systemItem._powerToggle) {
       callback(system._systemItem._powerToggle._proxy, system)
     }
-  }
-  else {
+  } else {
     let menu = Main.panel.statusArea.aggregateMenu
     if (menu && menu._power) {
       callback(menu._power._proxy, menu._power)
