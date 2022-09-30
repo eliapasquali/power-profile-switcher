@@ -1,5 +1,8 @@
 # Change Log
 
+## 32
+* Fixed GNOME 43 support (by Asriel Camora).
+
 ## 31
 * Added Korean translation (by Hoseok Seo).
 
