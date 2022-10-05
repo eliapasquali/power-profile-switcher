@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-05 18:11-0400\n"
-"PO-Revision-Date: 2022-09-28 08:53+0000\n"
+"PO-Revision-Date: 2022-10-04 14:15+0000\n"
 "Last-Translator: Hoseok Seo <ddinghoya@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/autohide-battery/"
 "settings/ko/>\n"
@@ -21,8 +21,8 @@ msgstr ""
 
 #: prefs.js:20
 msgid "Hide on battery level above"
-msgstr "지정된 배터리 수준 이상 숨기기"
+msgstr "지정된 배터리 잔량 이상 숨기기"
 
 #: prefs.js:33
 msgid "If you changed maximum charging level to extend battery life"
-msgstr "배터리 수명을 연장하기 위해 최대 충전 수준을 변경한 경우"
+msgstr "배터리 수명을 연장하기 위해 최대 충전 잔량을 변경한 경우"
