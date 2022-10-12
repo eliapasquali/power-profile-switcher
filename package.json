@@ -12,7 +12,7 @@
   "license": "MIT",
   "devDependencies": {
     "@logux/eslint-config": "^47.2.0",
-    "eslint": "^8.24.0",
+    "eslint": "^8.25.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.3.0",
