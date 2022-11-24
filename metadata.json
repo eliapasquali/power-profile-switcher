@@ -1,9 +1,8 @@
 {
-  "name": "Autohide Battery",
-  "description": "Hide battery icon in top panel, if battery is fully charged and AC is connected",
-  "url": "https://github.com/ai/autohide-battery",
-  "uuid": "autohide-battery@sitnik.ru",
-  "shell-version": ["40", "41", "42", "43"],
-  "gettext-domain": "autohide-battery",
-  "version": 33
+    "uuid": "power-profile-switcher@ennioitaliano.github.io",
+    "name": "Power Profile Switcher",
+    "description": "Automatically switch between power profiles based on power supply.",
+    "version": 0.1,
+    "shell-version": ["41", "42", "43"],
+    "url": "https://github.com/ennioitaliano/power-profile-switcher"
 }
