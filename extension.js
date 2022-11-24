@@ -28,7 +28,6 @@ function switchProfile(profile) {
 function update() {
     let chosenpercentage = settings.get_int("chosenpercentage");
     getBattery((proxy) => {
-        console.log("percentuale: " + proxy.Percentage);
         let isDischarging = proxy.State === UPower.DeviceState.DISCHARGING;
         if (!isDischarging) {
             switchProfile("performance");
@@ -61,7 +60,9 @@ function init() {
 function enable() {
     if (disabled) {
         disabled = false;
-        settings = ExtensionUtils.getSettings("ennioitaliano.power-profile-switcher");
+        settings = ExtensionUtils.getSettings(
+            "ennioitaliano.power-profile-switcher"
+        );
         settingsWatching = settings.connect(
             "changed::chosenpercentage",
             update
