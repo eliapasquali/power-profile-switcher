@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema id="ennioitaliano.power-profile-switcher" path="/ennioitaliano/power-profile-switcher/">
-    <key name="chosenpercentage" type="i">
-      <summary>Battery level to switch between balanced and power saver</summary>
-      <default>70</default>
+  <schema id="org.gnome.shell.extensions.power-profile-switcher" path="/org/gnome/shell/power-profile-switcher/">
+    <key name="ac" type="s">
+      <default>"performance"</default>
+      <summary>On AC profile</summary>
+      <description>Select the default profile to use when connected to AC</description>
+    </key>
+    <key name="bat" type="s">
+      <default>"balanced"</default>
+      <summary>On battery profile</summary>
+      <description>Select the default profile to use when running on battery</description>
+    </key>
+    <key name="threshold" type="i">
+      <default>25</default>
+      <summary>Power saving threshold</summary>
+      <description>Select battery level to turn on the power saving profile</description>
     </key>
   </schema>
 </schemalist>
