@@ -1,44 +1,94 @@
+const {Adw, GLib, Gtk} = imports.gi;
+
 const ExtensionUtils = imports.misc.extensionUtils;
-const Gettext = imports.gettext;
-const Gtk = imports.gi.Gtk;
+const Me = ExtensionUtils.getCurrentExtension();
+const Settings = ExtensionUtils.getSettings("org.gnome.shell.extensions.power-profile-switcher");
 
-let _ = Gettext.domain("power-profile-switcher").gettext;
+function init(meta) {}
 
-function init() {
-    ExtensionUtils.initTranslations("power-profile-switcher");
-}
+function fillPreferencesWindow(window) {
+    const prefsPage = new Adw.PreferencesPage({
+        name: 'general',
+        title: 'General',
+        icon_name: 'dialog-information-symbolic',
+    });
+    window.add(prefsPage);
+    
+    const defaultsGroup = new Adw.PreferencesGroup({
+        title: 'Default profiles',
+        description: `Configure the default profiles used by ${Me.metadata.name}`,
+    });
+    prefsPage.add(defaultsGroup);
 
-function buildPrefsWidget() {
-    let settings = ExtensionUtils.getSettings("ennioitaliano.power-profile-switcher");
+    // On AC default
+    const ac_defaults_row = new Adw.ActionRow({
+        title: 'On AC',
+        subtitle: 'Select the default profile when connected to AC'
+    })
 
-    let grid = new Gtk.Grid({
-        margin_top: 24,
-        margin_bottom: 24,
-        margin_start: 24,
-        margin_end: 24,
-        column_spacing: 24,
-        row_spacing: 12,
-        halign: Gtk.Align.CENTER,
+    const ac_defaults_combo = new Gtk.ComboBoxText();
+    ac_defaults_combo.append("performance", "Performance");
+    ac_defaults_combo.append("balanced", "Balanced");
+    ac_defaults_combo.append("power-saver", "Power Saving");
+    ac_defaults_combo.set_active_id(Settings.get_string("ac"));
+
+    ac_defaults_row.add_suffix(ac_defaults_combo);
+
+    defaultsGroup.add(ac_defaults_row);
+
+    // On battery defaults
+    const battery_default_row = new Adw.ActionRow({
+        title: 'On battery',
+        subtitle: 'Select the default profile when running on battery'
+    })
+
+    const battery_default_combo = new Gtk.ComboBoxText();
+    battery_default_combo.append("performance", "Performance");
+    battery_default_combo.append("balanced", "Balanced");
+    battery_default_combo.append("power-saver", "Power Saving");
+    battery_default_combo.set_active_id(Settings.get_string("bat"));
+
+    battery_default_row.add_suffix(battery_default_combo);
+
+    defaultsGroup.add(battery_default_row);
+
+    // Power saving configuration, like activation threshold
+    const powerSavingGroup = new Adw.PreferencesGroup({
+        title: 'Power saving configuration',
+        description: `Configure the power saving options`,
+    });
+    prefsPage.add(powerSavingGroup);
+
+    // Set the threshold
+    const threshold_default_row = new Adw.ActionRow({
+        title: 'Power saving threshold',
+        subtitle: 'Switch to power saving profile when the battery level drops below:'
+    })
+
+    const battery_threshold_spin = new Gtk.SpinButton();
+    battery_threshold_spin.set_range(0, 100);
+    battery_threshold_spin.set_sensitive(true);
+    battery_threshold_spin.set_increments(1, 10);
+
+    battery_threshold_spin.set_value(Settings.get_int("threshold"));
+
+    threshold_default_row.add_suffix(battery_threshold_spin);
+
+    powerSavingGroup.add(threshold_default_row);
+
+
+    // Connect components and save settings
+    battery_threshold_spin.connect("value-changed", (battery_threshold_spin) => {
+        Settings.set_int("threshold", battery_threshold_spin.get_value_as_int());
     });
 
-    let label = new Gtk.Label({
-        label: _("Switch between balanced and battery saver when the battery drops under the above percentage"),
-        halign: Gtk.Align.START,
+    ac_defaults_combo.connect("changed", (ac_defaults_combo) => {
+        Settings.set_string("ac", ac_defaults_combo.get_active_id());
     });
-    grid.attach(label, 0, 0, 1, 1);
 
-    let field = new Gtk.SpinButton();
-    field.set_range(0, 100);
-    field.set_sensitive(true);
-    field.set_increments(1, 10);
-    grid.attach(field, 1, 0, 1, 1);
+    battery_default_combo.connect("changed", (battery_default_combo) => {
+        Settings.set_string("bat", battery_default_combo.get_active_id());
+    });
+    
 
-    field.set_value(settings.get_int("chosenpercentage"));
-    field.connect("value-changed", (widget) => {
-        settings.set_int("chosenpercentage", widget.get_value_as_int());
-    });
-    settings.connect("changed::chosenpercentage", () => {
-        field.set_value(settings.get_int("chosenpercentage"));
-    });
-    return grid;
 }

@@ -1,45 +1,41 @@
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
-const UPower = imports.gi.UPowerGlib;
-const Gio = imports.gi.Gio;
+const { Gio, UPowerGlib:UPower } = imports.gi;
 
-let batteryWatching, settingsWatching, settings, disabled;
+const Settings = ExtensionUtils.getSettings("org.gnome.shell.extensions.power-profile-switcher");
 
-function switchProfile(profile) {
+// Checks for changes in settings, must be disconnected in disable
+let batteryPercentageWatcher, batteryThresholdWatcher;
+let ACDefaultWatcher, batteryDefaultWatcher;
+
+let batteryThreshold, ACDefault, batteryDefault;
+
+const switchProfile = (profile) => {
     try {
-        // The process starts running immediately after this function is called. Any
-        // error thrown here will be a result of the process failing to start, not
-        // the success or failure of the process itself.
-        let proc = Gio.Subprocess.new(
-            // The program and command options are passed as a list of arguments
+        Gio.Subprocess.new(
             ["powerprofilesctl", "set", profile],
-
-            // The flags control what I/O pipes are opened and how they are directed
             Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
         );
-
-        // Once the process has started, you can end it with `force_exit()`
-        //proc.force_exit();
     } catch (e) {
         logError(e);
     }
 }
 
-function update() {
-    let chosenpercentage = settings.get_int("chosenpercentage");
+const checkProfile = () => {
+    getDefaults();
     getBattery((proxy) => {
-        let isDischarging = proxy.State === UPower.DeviceState.DISCHARGING;
-        if (!isDischarging) {
-            switchProfile("performance");
-        } else if (proxy.Percentage >= chosenpercentage && isDischarging) {
-            switchProfile("balanced");
-        } else if (proxy.Percentage < chosenpercentage && isDischarging) {
-            switchProfile("power-saver");
+        if(proxy.State === UPower.DeviceState.CHARGING || proxy.State === UPower.DeviceState.PENDING_CHARGE) {
+            switchProfile(ACDefault);
+        } else {
+            if(proxy.Percentage >= batteryThreshold)
+                switchProfile(batteryDefault);
+            else
+                switchProfile("power-saver");
         }
     });
 }
 
-function getBattery(callback) {
+const getBattery = (callback) => {
     if (Main.panel.statusArea.quickSettings) {
         let system = Main.panel.statusArea.quickSettings._system;
         if (system._systemItem._powerToggle) {
@@ -53,34 +49,46 @@ function getBattery(callback) {
     }
 }
 
-function init() {
-    disabled = true;
+const getDefaults = () => {
+    ACDefault = Settings.get_string("ac");
+    batteryDefault = Settings.get_string("bat");
+    batteryThreshold = Settings.get_int("threshold");
 }
 
+function init() {}
+
 function enable() {
-    if (disabled) {
-        disabled = false;
-        settings = ExtensionUtils.getSettings(
-            "ennioitaliano.power-profile-switcher"
+    batteryPercentageWatcher = Settings.connect(
+        "changed::threshold",
+        checkProfile
+    );
+    
+    ACDefaultWatcher = Settings.connect(
+        "changed::ac",
+        checkProfile
+    );
+
+    batteryDefaultWatcher = Settings.connect(
+        "changed::bat",
+        checkProfile
+    );
+    
+    getBattery((proxy) => {
+        batteryThresholdWatcher = proxy.connect(
+            "g-properties-changed",
+            checkProfile
         );
-        settingsWatching = settings.connect(
-            "changed::chosenpercentage",
-            update
-        );
-        getBattery((proxy) => {
-            batteryWatching = proxy.connect("g-properties-changed", update);
-        });
-        update();
-    }
+    });
+
+    checkProfile();
 }
 
 function disable() {
-    if (Main.sessionMode.currentMode !== "unlock-dialog") {
-        disabled = true;
-        if (settings) settings.disconnect(settingsWatching);
-        getBattery((proxy) => {
-            proxy.disconnect(batteryWatching);
-        });
-        switchProfile();
-    }
+    Settings.disconnect(batteryPercentageWatcher);
+    Settings.disconnect(ACDefaultWatcher);
+    Settings.disconnect(batteryDefaultWatcher);
+    getBattery((proxy) => {
+        proxy.disconnect(batteryThresholdWatcher);
+    });
+    switchProfile("balanced");
 }
