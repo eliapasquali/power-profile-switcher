@@ -24,8 +24,7 @@ const switchProfile = (profile) => {
 const checkProfile = () => {
     getDefaults();
     getBattery((proxy) => {
-        let isDischarging = proxy.State === UPower.DeviceState.DISCHARGING;
-        if(!isDischarging) {
+        if(proxy.State === UPower.DeviceState.CHARGING || proxy.State === UPower.DeviceState.PENDING_CHARGE) {
             switchProfile(ACDefault);
         } else {
             if(proxy.Percentage >= batteryThreshold)
