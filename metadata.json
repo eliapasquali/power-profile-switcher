@@ -2,7 +2,7 @@
     "uuid": "power-profile-switcher@ennioitaliano.github.io",
     "name": "Power Profile Switcher",
     "description": "Automatically switch between power profiles based on power supply and percentage.",
-    "version": 0.2,
+    "version": 2,
     "shell-version": ["41", "42", "43"],
     "url": "https://github.com/ennioitaliano/power-profile-switcher"
 }
