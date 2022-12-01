@@ -12,8 +12,9 @@ When enabled, the extension will automatically switch to:
 Installation via git is performed by cloning this repo into the your local gnome-shell extensions directory.
 These are usually stored in `~/.local/share/gnome-shell/extensions/`
 ```
-$ cd ~/.local/share/gnome-shell/extensions
-$ git clone
+$ cd .local/share/gnome-shell/extensions
+$ git clone https://github.com/ennioitaliano/power-profile-switcher
+$ sudo mv power-profile-switcher power-profile-switcher@ennioitaliano.github.io
 ```
 After this, the extensions is installed. In order to enable it run the following command or use the Extensions app.
 ```
