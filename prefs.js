@@ -1,12 +1,17 @@
 const {Adw, GLib, Gtk} = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const Settings = ExtensionUtils.getSettings("org.gnome.shell.extensions.power-profile-switcher");
 
-function init(meta) {}
+let settings;
+
+function init() {}
 
 function fillPreferencesWindow(window) {
+
+    settings = ExtensionUtils.getSettings(
+        "org.gnome.shell.extensions.power-profile-switcher"
+    );
+
     const prefsPage = new Adw.PreferencesPage({
         name: 'general',
         title: 'General',
@@ -16,7 +21,7 @@ function fillPreferencesWindow(window) {
     
     const defaultsGroup = new Adw.PreferencesGroup({
         title: 'Default profiles',
-        description: `Configure the default profiles used by ${Me.metadata.name}`,
+        description: 'Configure the default profiles',
     });
     prefsPage.add(defaultsGroup);
 
@@ -30,7 +35,7 @@ function fillPreferencesWindow(window) {
     ac_defaults_combo.append("performance", "Performance");
     ac_defaults_combo.append("balanced", "Balanced");
     ac_defaults_combo.append("power-saver", "Power Saving");
-    ac_defaults_combo.set_active_id(Settings.get_string("ac"));
+    ac_defaults_combo.set_active_id(settings.get_string("ac"));
 
     ac_defaults_row.add_suffix(ac_defaults_combo);
 
@@ -46,7 +51,7 @@ function fillPreferencesWindow(window) {
     battery_default_combo.append("performance", "Performance");
     battery_default_combo.append("balanced", "Balanced");
     battery_default_combo.append("power-saver", "Power Saving");
-    battery_default_combo.set_active_id(Settings.get_string("bat"));
+    battery_default_combo.set_active_id(settings.get_string("bat"));
 
     battery_default_row.add_suffix(battery_default_combo);
 
@@ -70,7 +75,7 @@ function fillPreferencesWindow(window) {
     battery_threshold_spin.set_sensitive(true);
     battery_threshold_spin.set_increments(1, 10);
 
-    battery_threshold_spin.set_value(Settings.get_int("threshold"));
+    battery_threshold_spin.set_value(settings.get_int("threshold"));
 
     threshold_default_row.add_suffix(battery_threshold_spin);
 
@@ -79,16 +84,15 @@ function fillPreferencesWindow(window) {
 
     // Connect components and save settings
     battery_threshold_spin.connect("value-changed", (battery_threshold_spin) => {
-        Settings.set_int("threshold", battery_threshold_spin.get_value_as_int());
+        settings.set_int("threshold", battery_threshold_spin.get_value_as_int());
     });
 
     ac_defaults_combo.connect("changed", (ac_defaults_combo) => {
-        Settings.set_string("ac", ac_defaults_combo.get_active_id());
+        settings.set_string("ac", ac_defaults_combo.get_active_id());
     });
 
     battery_default_combo.connect("changed", (battery_default_combo) => {
-        Settings.set_string("bat", battery_default_combo.get_active_id());
+        settings.set_string("bat", battery_default_combo.get_active_id());
     });
-    
 
 }
