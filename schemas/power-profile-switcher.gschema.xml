@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema id="org.gnome.shell.extensions.power-profile-switcher" path="/org/gnome/shell/power-profile-switcher/">
+	<schema id="org.gnome.shell.extensions.power-profile-switcher" path="/org/gnome/shell/extensions/power-profile-switcher/">
     <key name="ac" type="s">
       <default>"performance"</default>
       <summary>On AC profile</summary>
