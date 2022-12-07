@@ -2,15 +2,14 @@ const {Adw, GLib, Gtk} = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 
-let settings;
-
 function init() {}
 
 function fillPreferencesWindow(window) {
 
-    settings = ExtensionUtils.getSettings(
+    let settings = ExtensionUtils.getSettings(
         "org.gnome.shell.extensions.power-profile-switcher"
     );
+    window._prefsSettings = settings;
 
     const prefsPage = new Adw.PreferencesPage({
         name: 'general',
