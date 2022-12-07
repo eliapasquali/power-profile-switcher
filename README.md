@@ -8,8 +8,12 @@ When enabled, the extension will automatically switch to:
 - the selected defaults profiles based on the which power supply the device is running on.
 - to power saving profile if running on battery and the percentage drops below the selected level.
 
-## Installation
-Installation via git is performed by cloning this repo into the your local gnome-shell extensions directory.  
+## Installation from Gnome Extensions
+Get the extension from the [store](https://extensions.gnome.org/extension/5575/power-profile-switcher/).
+
+
+## Installation from source
+Clone the repo and put the files in the extension folder.  
 These are usually stored in `~/.local/share/gnome-shell/extensions/`
 ```
 $ cd .local/share/gnome-shell/extensions
