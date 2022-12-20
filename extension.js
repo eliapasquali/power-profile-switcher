@@ -2,7 +2,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
 const { Gio, UPowerGlib:UPower } = imports.gi;
 
-let settings;
+let settings, client, device;
 
 // Checks for changes in settings, must be disconnected in disable
 let batteryPercentageWatcher, batteryThresholdWatcher;
@@ -24,26 +24,19 @@ const switchProfile = (profile) => {
 const checkProfile = () => {
     getDefaults();
     getBattery((proxy) => {
-        switch (proxy.State) {
-            // State 1,4,5. FULLY_CHARGED for when the battery is completely
-            // charged and the charger still plugged in
-            case UPower.DeviceState.CHARGING ||
-                    UPower.DeviceState.PENDING_CHARGE ||  
-                    UPower.DeviceState.FULLY_CHARGED :
-                switchProfile(ACDefault);
-                break;
-            // State 2,6
-            case UPower.DeviceState.DISCHARGING ||
-                    UPower.DeviceState.PENDING_DISCHARGE :
-                if(proxy.Percentage >= batteryThreshold)
-                    switchProfile(batteryDefault);
-                else
-                    switchProfile("power-saver");
-                break;
-            // State 0=UNKNOWN, 3=EMPTY, 7=LAST
-            default:
-                switchProfile("balanced");
-                break;
+        if(proxy.State === UPower.DeviceState.UNKNOWN ||
+            client.on_battery === undefined ||
+            device.percentage === undefined )
+            switchProfile("balanced");
+
+        if(client.on_battery){
+            if(device.percentage >= batteryThreshold) {
+                switchProfile(batteryDefault);
+            } else {
+                switchProfile("power-saver");
+            }
+        } else {
+            switchProfile(ACDefault);
         }
     });
 }
@@ -71,6 +64,9 @@ const getDefaults = () => {
 function init() {}
 
 function enable() {
+
+    client = UPower.Client.new();
+    device = client.get_display_device();
 
     settings = ExtensionUtils.getSettings(
         "org.gnome.shell.extensions.power-profile-switcher"
@@ -109,5 +105,7 @@ function disable() {
         proxy.disconnect(batteryThresholdWatcher);
     });
     settings = null;
+    client = null;
+    device = null;
     switchProfile("balanced");
 }
