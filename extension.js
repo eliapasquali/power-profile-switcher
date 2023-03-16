@@ -26,10 +26,13 @@ const checkProfile = () => {
     getBattery((proxy) => {
         if(proxy.State === UPower.DeviceState.UNKNOWN ||
             client.on_battery === undefined ||
-            device.percentage === undefined )
-            switchProfile("balanced");
-
-        if(client.on_battery){
+            device.percentage === undefined ) {
+                switchProfile("balanced");
+            }
+              
+        if(client.on_battery || 
+            device.state === UPower.DeviceState.PENDING_DISCHARGE ||
+            device.state === UPower.DeviceState.DISCHARGING ){
             if(device.percentage >= batteryThreshold) {
                 switchProfile(batteryDefault);
             } else {
