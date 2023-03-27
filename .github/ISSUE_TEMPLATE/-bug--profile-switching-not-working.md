@@ -1,5 +1,5 @@
 ---
-name: "[BUG]: Profile switching not working"
+name: "[BUG] Profile switching not working"
 about: Describe the problem and your system
 title: "[BUG]: Profile switching not working"
 labels: bug
