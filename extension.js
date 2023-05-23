@@ -1,20 +1,41 @@
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
-const { Gio, UPowerGlib:UPower } = imports.gi;
+const { Gio, GLib, UPowerGlib:UPower } = imports.gi;
 
 let settings, client, device;
 
 // Checks for changes in settings, must be disconnected in disable
 let batteryPercentageWatcher, batteryThresholdWatcher;
-let ACDefaultWatcher, batteryDefaultWatcher;
+let ACDefaultWatcher, batteryDefaultWatcher, platformProfileWatcher
+let profileRestoreTimerId;
 
 let batteryThreshold, ACDefault, batteryDefault;
 
+const profileRestoreTimeout = 5000;
+
 const switchProfile = (profile) => {
     try {
-        Gio.Subprocess.new(
-            ["powerprofilesctl", "set", profile],
-            Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
+        Gio.DBus.system.call(
+            'net.hadess.PowerProfiles',
+            '/net/hadess/PowerProfiles',
+            'org.freedesktop.DBus.Properties',
+            'Set',
+            new GLib.Variant('(ssv)', [
+                'net.hadess.PowerProfiles',
+                'ActiveProfile',
+                new GLib.Variant('s', profile)
+            ]),
+            null,
+            Gio.DBusCallFlags.NONE,
+            -1,
+            null,
+            (connection, res) => {
+                try {
+                    connection.call_finish(res);
+                } catch (e) {
+                    logError(e);
+                }
+            }
         );
     } catch (e) {
         logError(e);
@@ -24,23 +45,26 @@ const switchProfile = (profile) => {
 const checkProfile = () => {
     getDefaults();
     getBattery((proxy) => {
-        if(proxy.State === UPower.DeviceState.UNKNOWN ||
+        let nextProfile = "balanced";
+            
+        if (
+            proxy.State === UPower.DeviceState.UNKNOWN ||
             client.on_battery === undefined ||
-            device.percentage === undefined ) {
-                switchProfile("balanced");
-            }
-              
-        if(client.on_battery || 
+            device.percentage === undefined
+        ) {
+            nextProfile = "balanced";
+        } else if(
+            client.on_battery || 
             device.state === UPower.DeviceState.PENDING_DISCHARGE ||
-            device.state === UPower.DeviceState.DISCHARGING ){
-            if(device.percentage >= batteryThreshold) {
-                switchProfile(batteryDefault);
-            } else {
-                switchProfile("power-saver");
-            }
-        } else {
-            switchProfile(ACDefault);
+            device.state === UPower.DeviceState.DISCHARGING
+        ) {
+            nextProfile = device.percentage >= batteryThreshold ? batteryDefault : "power-saver"
         }
+        else {
+            nextProfile = ACDefault;
+        }
+
+        switchProfile(nextProfile);
     });
 }
 
@@ -97,6 +121,38 @@ function enable() {
         );
     });
 
+    platformProfileWatcher = Gio.DBus.system.signal_subscribe(
+        'net.hadess.PowerProfiles',
+        'org.freedesktop.DBus.Properties',
+        'PropertiesChanged',
+        '/net/hadess/PowerProfiles',
+        null,
+        Gio.DBusSignalFlags.NONE,
+        (connection, sender, path, iface, signal, params) => {
+            const isOnPowerSupply = device?.power_supply ||
+                device.state !== UPower.DeviceState.PENDING_DISCHARGE ||
+                device.state !== UPower.DeviceState.DISCHARGING;
+
+            if (isOnPowerSupply) {
+                try {
+                    const reason = params.get_child_value(1)?.deep_unpack()?.PerformanceDegraded?.unpack();
+                    if (reason === 'lap-detected') {
+                        if (profileRestoreTimerId) {
+                            GLib.source_remove(profileRestoreTimerId);
+                        }
+                        profileRestoreTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, profileRestoreTimeout, () => {
+                            checkProfile();
+                            return GLib.SOURCE_REMOVE;
+                        });
+                    }
+                }
+                catch (e) {
+                    logError(e)
+                }
+            }
+        }
+    );
+
     checkProfile();
 }
 
@@ -107,8 +163,20 @@ function disable() {
     getBattery((proxy) => {
         proxy.disconnect(batteryThresholdWatcher);
     });
+
+    try {
+        // https://gjs.guide/guides/gio/dbus.html#direct-calls
+        Gio.DBus.system.singal_unsubscribe(platformProfileWatcher);
+    }
+    catch (e) {
+        logError(e);
+    }
+    if (profileRestoreTimerId) {
+        GLib.source_remove(profileRestoreTimerId);
+    }
     settings = null;
     client = null;
     device = null;
     switchProfile("balanced");
 }
+
