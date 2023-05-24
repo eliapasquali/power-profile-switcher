@@ -9,11 +9,17 @@ let batteryPercentageWatcher, batteryThresholdWatcher;
 let ACDefaultWatcher, batteryDefaultWatcher, platformProfileWatcher
 let profileRestoreTimerId;
 
-let batteryThreshold, ACDefault, batteryDefault;
+let batteryThreshold, ACDefault, batteryDefault, activeProfile;
 
 const profileRestoreTimeout = 5000;
 
 const switchProfile = (profile) => {
+    if (profileRestoreTimerId) {
+        GLib.source_remove(profileRestoreTimerId);
+    }
+    if (profile === activeProfile) {
+        return;
+    }
     try {
         Gio.DBus.system.call(
             'net.hadess.PowerProfiles',
@@ -129,6 +135,8 @@ function enable() {
         null,
         Gio.DBusSignalFlags.NONE,
         (connection, sender, path, iface, signal, params) => {
+            activeProfile = params.get_child_value(1)?.deep_unpack()?.ActiveProfile?.unpack();
+
             const isOnPowerSupply = device?.power_supply ||
                 device.state !== UPower.DeviceState.PENDING_DISCHARGE ||
                 device.state !== UPower.DeviceState.DISCHARGING;
@@ -136,10 +144,8 @@ function enable() {
             if (isOnPowerSupply) {
                 try {
                     const reason = params.get_child_value(1)?.deep_unpack()?.PerformanceDegraded?.unpack();
+                    
                     if (reason === 'lap-detected') {
-                        if (profileRestoreTimerId) {
-                            GLib.source_remove(profileRestoreTimerId);
-                        }
                         profileRestoreTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, profileRestoreTimeout, () => {
                             checkProfile();
                             return GLib.SOURCE_REMOVE;
