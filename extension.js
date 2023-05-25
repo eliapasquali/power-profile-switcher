@@ -7,16 +7,29 @@ let settings, client, device;
 // Checks for changes in settings, must be disconnected in disable
 let batteryPercentageWatcher, batteryThresholdWatcher;
 let ACDefaultWatcher, batteryDefaultWatcher, platformProfileWatcher
-let profileRestoreTimerId;
 
 let batteryThreshold, ACDefault, batteryDefault, activeProfile;
 
-const profileRestoreTimeout = 5000;
+let _proxy, _cancellable;
+
+const BUS_NAME = 'org.freedesktop.UPower';
+const OBJECT_PATH = '/org/freedesktop/UPower/devices/DisplayDevice';
+
+const DisplayDeviceInterface = '<node> \
+<interface name="org.freedesktop.UPower.Device"> \
+  <property name="Type" type="u" access="read"/> \
+  <property name="State" type="u" access="read"/> \
+  <property name="Percentage" type="d" access="read"/> \
+  <property name="TimeToEmpty" type="x" access="read"/> \
+  <property name="TimeToFull" type="x" access="read"/> \
+  <property name="IsPresent" type="b" access="read"/> \
+  <property name="IconName" type="s" access="read"/> \
+</interface> \
+</node>';
+
+const PowerManagerProxy = Gio.DBusProxy.makeProxyWrapper(DisplayDeviceInterface);
 
 const switchProfile = (profile) => {
-    if (profileRestoreTimerId) {
-        GLib.source_remove(profileRestoreTimerId);
-    }
     if (profile === activeProfile) {
         return;
     }
@@ -50,42 +63,26 @@ const switchProfile = (profile) => {
 
 const checkProfile = () => {
     getDefaults();
-    getBattery((proxy) => {
-        let nextProfile = "balanced";
-            
-        if (
-            proxy.State === UPower.DeviceState.UNKNOWN ||
-            client.on_battery === undefined ||
-            device.percentage === undefined
-        ) {
-            nextProfile = "balanced";
-        } else if(
-            client.on_battery || 
-            device.state === UPower.DeviceState.PENDING_DISCHARGE ||
-            device.state === UPower.DeviceState.DISCHARGING
-        ) {
-            nextProfile = device.percentage >= batteryThreshold ? batteryDefault : "power-saver"
-        }
-        else {
-            nextProfile = ACDefault;
-        }
 
-        switchProfile(nextProfile);
-    });
-}
-
-const getBattery = (callback) => {
-    if (Main.panel.statusArea.quickSettings) {
-        let system = Main.panel.statusArea.quickSettings._system;
-        if (system._systemItem._powerToggle) {
-            callback(system._systemItem._powerToggle._proxy, system);
-        }
-    } else {
-        let menu = Main.panel.statusArea.aggregateMenu;
-        if (menu && menu._power) {
-            callback(menu._power._proxy, menu._power);
-        }
+    let nextProfile = "balanced";
+        
+    if (
+        _proxy.State === UPower.DeviceState.UNKNOWN ||
+        client.on_battery === undefined ||
+        device.percentage === undefined
+    ) {
+        nextProfile = "balanced";
+    } else if(
+        device.state === UPower.DeviceState.PENDING_DISCHARGE ||
+        device.state === UPower.DeviceState.DISCHARGING
+    ) {
+        nextProfile = device.percentage >= batteryThreshold ? batteryDefault : "power-saver"
     }
+    else {
+        nextProfile = ACDefault;
+    }
+
+    switchProfile(nextProfile);
 }
 
 const getDefaults = () => {
@@ -97,7 +94,6 @@ const getDefaults = () => {
 function init() {}
 
 function enable() {
-
     client = UPower.Client.new();
     device = client.get_display_device();
 
@@ -119,13 +115,16 @@ function enable() {
         "changed::bat",
         checkProfile
     );
-    
-    getBattery((proxy) => {
-        batteryThresholdWatcher = proxy.connect(
-            "g-properties-changed",
-            checkProfile
-        );
-    });
+
+    _cancellable = new Gio.Cancellable();
+    _proxy = new PowerManagerProxy(Gio.DBus.system, BUS_NAME, OBJECT_PATH,
+        (proxy, error) => {
+            if (error) {
+                logError(error.message);
+                return;
+            }
+            batteryThresholdWatcher = _proxy.connect('g-properties-changed', checkProfile);
+        }, _cancellable);
 
     platformProfileWatcher = Gio.DBus.system.signal_subscribe(
         'net.hadess.PowerProfiles',
@@ -135,21 +134,21 @@ function enable() {
         null,
         Gio.DBusSignalFlags.NONE,
         (connection, sender, path, iface, signal, params) => {
-            activeProfile = params.get_child_value(1)?.deep_unpack()?.ActiveProfile?.unpack();
-
+            const payload = params.get_child_value(1)?.deep_unpack();
+            
+            if (payload?.ActiveProfile) {
+                activeProfile = payload?.ActiveProfile?.unpack();
+            }
+            
             const isOnPowerSupply = device?.power_supply ||
                 device.state !== UPower.DeviceState.PENDING_DISCHARGE ||
                 device.state !== UPower.DeviceState.DISCHARGING;
 
-            if (isOnPowerSupply) {
+            if (isOnPowerSupply && payload?.PerformanceDegraded) {
                 try {
-                    const reason = params.get_child_value(1)?.deep_unpack()?.PerformanceDegraded?.unpack();
-                    
+                    const reason = payload?.PerformanceDegraded?.unpack();
                     if (reason === 'lap-detected') {
-                        profileRestoreTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, profileRestoreTimeout, () => {
-                            checkProfile();
-                            return GLib.SOURCE_REMOVE;
-                        });
+                        checkProfile();
                     }
                 }
                 catch (e) {
@@ -166,9 +165,9 @@ function disable() {
     settings.disconnect(batteryPercentageWatcher);
     settings.disconnect(ACDefaultWatcher);
     settings.disconnect(batteryDefaultWatcher);
-    getBattery((proxy) => {
-        proxy.disconnect(batteryThresholdWatcher);
-    });
+
+    _proxy.disconnect(batteryThresholdWatcher);
+    _cancellable.cancel();
 
     try {
         // https://gjs.guide/guides/gio/dbus.html#direct-calls
@@ -176,9 +175,6 @@ function disable() {
     }
     catch (e) {
         logError(e);
-    }
-    if (profileRestoreTimerId) {
-        GLib.source_remove(profileRestoreTimerId);
     }
     settings = null;
     client = null;
