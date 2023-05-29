@@ -16,5 +16,9 @@
       <summary>Power saving threshold</summary>
       <description>Select battery level to turn on the power saving profile</description>
     </key>
+    <key name="debug" type="b">
+        <default>false</default>
+        <summary>Boolean, enables verbose logging if true</summary>
+    </key>
   </schema>
 </schemalist>

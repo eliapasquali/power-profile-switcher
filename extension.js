@@ -6,11 +6,21 @@ let settings, client, device;
 
 // Checks for changes in settings, must be disconnected in disable
 let batteryPercentageWatcher, batteryThresholdWatcher;
-let ACDefaultWatcher, batteryDefaultWatcher, platformProfileWatcher
+let ACDefaultWatcher, batteryDefaultWatcher, platformProfileWatcher, debugModeWatcher;
 
 let batteryThreshold, ACDefault, batteryDefault, activeProfile;
 
 let _proxy, _cancellable;
+
+let debugMode = false;
+
+const debug = function(msg) {
+    if (debugMode) {
+        log(msg);
+    }
+}
+
+const checkDebugMode = () => (debugMode = settings.get_boolean('debug'));
 
 const BUS_NAME = 'org.freedesktop.UPower';
 const OBJECT_PATH = '/org/freedesktop/UPower/devices/DisplayDevice';
@@ -33,6 +43,7 @@ const switchProfile = (profile) => {
     if (profile === activeProfile) {
         return;
     }
+    debug(`switchProfile: ${profile}`);
     try {
         Gio.DBus.system.call(
             'net.hadess.PowerProfiles',
@@ -82,6 +93,7 @@ const checkProfile = () => {
         nextProfile = ACDefault;
     }
 
+    debug(`checkProfile: device.state=${device.state}, device.percentage=${device.percentage}, nextProfile=${nextProfile}`);
     switchProfile(nextProfile);
 }
 
@@ -116,6 +128,11 @@ function enable() {
         checkProfile
     );
 
+    debugModeWatcher = settings.connect(
+        "changed::debug",
+        checkDebugMode
+    );
+
     _cancellable = new Gio.Cancellable();
     _proxy = new PowerManagerProxy(Gio.DBus.system, BUS_NAME, OBJECT_PATH,
         (proxy, error) => {
@@ -147,6 +164,7 @@ function enable() {
             if (isOnPowerSupply && payload?.PerformanceDegraded) {
                 try {
                     const reason = payload?.PerformanceDegraded?.unpack();
+                    debug(`PerformanceDegraded: ${reason}`);
                     if (reason === 'lap-detected') {
                         checkProfile();
                     }
@@ -158,6 +176,7 @@ function enable() {
         }
     );
 
+    checkDebugMode();
     checkProfile();
 }
 
@@ -165,6 +184,7 @@ function disable() {
     settings.disconnect(batteryPercentageWatcher);
     settings.disconnect(ACDefaultWatcher);
     settings.disconnect(batteryDefaultWatcher);
+    settings.disconnect(debugModeWatcher);
 
     _proxy.disconnect(batteryThresholdWatcher);
     _cancellable.cancel();
