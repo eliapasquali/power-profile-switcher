@@ -1,8 +1,13 @@
 const {Adw, GLib, Gtk} = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
 
-function init() {}
+const _ = ExtensionUtils.gettext;
+
+function init() {
+    ExtensionUtils.initTranslations(Me.metadata.uuid);
+}
 
 function fillPreferencesWindow(window) {
 

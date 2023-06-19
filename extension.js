@@ -1,4 +1,5 @@
 const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
 const Main = imports.ui.main;
 const { Gio, UPowerGlib:UPower } = imports.gi;
 
@@ -64,7 +65,9 @@ const getDefaults = () => {
     batteryThreshold = settings.get_int("threshold");
 }
 
-function init() {}
+function init() {
+    ExtensionUtils.initTranslations(Me.metadata.uuid);
+}
 
 function enable() {
 
