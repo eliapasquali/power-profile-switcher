@@ -31,6 +31,7 @@ function fillPreferencesWindow(window) {
     })
 
     const ac_defaults_combo = new Gtk.ComboBoxText();
+    ac_defaults_combo.valign = Gtk.Align.CENTER;
     ac_defaults_combo.append("performance", "Performance");
     ac_defaults_combo.append("balanced", "Balanced");
     ac_defaults_combo.append("power-saver", "Power Saving");
@@ -47,6 +48,7 @@ function fillPreferencesWindow(window) {
     })
 
     const battery_default_combo = new Gtk.ComboBoxText();
+    battery_default_combo.valign = Gtk.Align.CENTER;
     battery_default_combo.append("performance", "Performance");
     battery_default_combo.append("balanced", "Balanced");
     battery_default_combo.append("power-saver", "Power Saving");
@@ -70,6 +72,7 @@ function fillPreferencesWindow(window) {
     })
 
     const battery_threshold_spin = new Gtk.SpinButton();
+    battery_threshold_spin.valign = Gtk.Align.CENTER;
     battery_threshold_spin.set_range(0, 100);
     battery_threshold_spin.set_sensitive(true);
     battery_threshold_spin.set_increments(1, 10);
