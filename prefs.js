@@ -18,27 +18,27 @@ function fillPreferencesWindow(window) {
 
     const prefsPage = new Adw.PreferencesPage({
         name: 'general',
-        title: 'General',
+        title: _('General'),
         icon_name: 'dialog-information-symbolic',
     });
     window.add(prefsPage);
     
     const defaultsGroup = new Adw.PreferencesGroup({
-        title: 'Default Profiles',
-        description: 'Configure the default profiles',
+        title: _('Default Profiles'),
+        description: _('Configure the default profiles'),
     });
     prefsPage.add(defaultsGroup);
 
     // On AC default
     const ac_defaults_row = new Adw.ActionRow({
-        title: 'On AC',
-        subtitle: 'Select the default profile when connected to AC'
+        title: _('On AC'),
+        subtitle: _('Select the default profile when connected to AC')
     })
 
     const ac_defaults_combo = new Gtk.ComboBoxText();
-    ac_defaults_combo.append("performance", "Performance");
-    ac_defaults_combo.append("balanced", "Balanced");
-    ac_defaults_combo.append("power-saver", "Power Saving");
+    ac_defaults_combo.append("performance", _("Performance"));
+    ac_defaults_combo.append("balanced", _("Balanced"));
+    ac_defaults_combo.append("power-saver", _("Power Saving"));
     ac_defaults_combo.set_active_id(settings.get_string("ac"));
 
     ac_defaults_row.add_suffix(ac_defaults_combo);
@@ -47,14 +47,14 @@ function fillPreferencesWindow(window) {
 
     // On battery defaults
     const battery_default_row = new Adw.ActionRow({
-        title: 'On Battery',
-        subtitle: 'Select the default profile when running on battery'
+        title: _('On Battery'),
+        subtitle: _('Select the default profile when running on battery')
     })
 
     const battery_default_combo = new Gtk.ComboBoxText();
-    battery_default_combo.append("performance", "Performance");
-    battery_default_combo.append("balanced", "Balanced");
-    battery_default_combo.append("power-saver", "Power Saving");
+    battery_default_combo.append("performance", _("Performance"));
+    battery_default_combo.append("balanced", _("Balanced"));
+    battery_default_combo.append("power-saver", _("Power Saving"));
     battery_default_combo.set_active_id(settings.get_string("bat"));
 
     battery_default_row.add_suffix(battery_default_combo);
@@ -63,15 +63,15 @@ function fillPreferencesWindow(window) {
 
     // Power saving configuration, like activation threshold
     const powerSavingGroup = new Adw.PreferencesGroup({
-        title: 'Power Saving Configuration',
-        description: `Configure the power saving options`,
+        title: _('Power Saving Configuration'),
+        description: _(`Configure the power saving options`),
     });
     prefsPage.add(powerSavingGroup);
 
     // Set the threshold
     const threshold_default_row = new Adw.ActionRow({
-        title: 'Power Saving Threshold',
-        subtitle: 'Switch to power saving profile when the battery level drops below:'
+        title: _('Power Saving Threshold'),
+        subtitle: _('Switch to power saving profile when the battery level drops below:')
     })
 
     const battery_threshold_spin = new Gtk.SpinButton();
