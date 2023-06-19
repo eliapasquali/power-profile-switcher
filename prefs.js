@@ -19,7 +19,7 @@ function fillPreferencesWindow(window) {
     window.add(prefsPage);
     
     const defaultsGroup = new Adw.PreferencesGroup({
-        title: 'Default profiles',
+        title: 'Default Profiles',
         description: 'Configure the default profiles',
     });
     prefsPage.add(defaultsGroup);
@@ -42,7 +42,7 @@ function fillPreferencesWindow(window) {
 
     // On battery defaults
     const battery_default_row = new Adw.ActionRow({
-        title: 'On battery',
+        title: 'On Battery',
         subtitle: 'Select the default profile when running on battery'
     })
 
@@ -58,14 +58,14 @@ function fillPreferencesWindow(window) {
 
     // Power saving configuration, like activation threshold
     const powerSavingGroup = new Adw.PreferencesGroup({
-        title: 'Power saving configuration',
+        title: 'Power Saving Configuration',
         description: `Configure the power saving options`,
     });
     prefsPage.add(powerSavingGroup);
 
     // Set the threshold
     const threshold_default_row = new Adw.ActionRow({
-        title: 'Power saving threshold',
+        title: 'Power Saving Threshold',
         subtitle: 'Switch to power saving profile when the battery level drops below:'
     })
 
