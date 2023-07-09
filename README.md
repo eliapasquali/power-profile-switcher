@@ -2,7 +2,7 @@
 GNOME Shell extension to automatically switch between power profiles based on power supply
 
 ## Settings
-![Settings window](.github/img/settings.jpg)  
+![Settings window](.github/img/settings.png)
 
 When enabled, the extension will automatically switch to:
 - the selected defaults profiles based on the which power supply the device is running on.
