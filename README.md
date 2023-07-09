@@ -35,12 +35,12 @@ This extension can be found in the [store](https://extensions.gnome.org/extensio
 [<img src=".github/img/store.png" height="100" alt="Get it on GNOME Extensions">](https://extensions.gnome.org/extension/5575/power-profile-switcher/)
 
 ### Installation from source
-Clone the repo and put the files in the extension folder.  
-These are usually stored in `~/.local/share/gnome-shell/extensions/`
+Clone the repo, pack and install the extension.
 ```
-cd .local/share/gnome-shell/extensions
 git clone https://github.com/eliapasquali/power-profile-switcher
-sudo mv power-profile-switcher power-profile-switcher@eliapasquali.github.io
+cd power-profile-switcher
+gnome-extensions pack
+gnome-extensions install power-profile-switcher@eliapasquali.github.io.shell-extension.zip
 ```
 After this, the extensions is installed. In order to enable it run the following command or use the Extensions app.
 ```
