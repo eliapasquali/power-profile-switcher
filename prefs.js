@@ -52,6 +52,7 @@ var General = GObject.registerClass({
 
 function init() {}
 
+
 function fillPreferencesWindow(window) {
 
     const settings = ExtensionUtils.getSettings("org.gnome.shell.extensions.power-profile-switcher");

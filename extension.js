@@ -101,7 +101,9 @@ const getDefaults = () => {
     batteryThreshold = settings.get_int("threshold");
 }
 
-function init() {}
+function init() {
+    ExtensionUtils.initTranslations(Me.metadata.uuid);
+}
 
 function enable() {
     client = UPower.Client.new();
