@@ -1,4 +1,5 @@
 const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
 const { loadInterfaceXML } = imports.misc.fileUtils;
 
 const Main = imports.ui.main;
