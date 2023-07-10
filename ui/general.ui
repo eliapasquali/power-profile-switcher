@@ -19,7 +19,7 @@
 
                 <child>
                     <object class="AdwComboRow" id="bat_profile">
-                        <property name="title" translatable="yes">On batery profile</property>
+                        <property name="title" translatable="yes">On battery profile</property>
                         <property name="subtitle" translatable="yes">Select the default profile to use when running on battery</property>
                         <property name="model">platform_profile_model</property>
                     </object>
