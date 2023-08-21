@@ -4,5 +4,7 @@
     "description": "Automatically switch between power profiles based on power supply and percentage.",
     "version": 3,
     "shell-version": ["45"],
-    "url": "https://github.com/eliapasquali/power-profile-switcher"
+    "url": "https://github.com/eliapasquali/power-profile-switcher",
+    "gettext-domain": "org.gnome.shell.extensions.power-profile-switcher",
+    "settings-schema": "org.gnome.shell.extensions.power-profile-switcher"
 }
