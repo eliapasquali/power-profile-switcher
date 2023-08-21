@@ -1,7 +1,9 @@
-const { Adw, GLib, GObject, Gio } = imports.gi;
+import Adw from 'gi://Adw';
+import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
+import Gio from 'gi://Gio';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
+import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 const PROFILE_CHOICES = [
     'performance',
@@ -25,38 +27,33 @@ function bindAdwComboRow(comboRow, settings, key, map_) {
     });
 }
 
-
 var General = GObject.registerClass({
     GTypeName: 'GeneralPreferences',
-    Template: `file://${GLib.build_filenamev([Me.path, 'ui', 'general.ui'])}`,
+    Template: GLib.Uri.resolve_relative(import.meta.url, './ui/general.ui', GLib.UriFlags.NONE),
     InternalChildren: [
         'ac_profile',
         'bat_profile',
         'threshold',
     ],
 }, class General extends Adw.PreferencesPage {
-    constructor(settings) {
-        super({});
+    _init(settings, params = {}) {
+        super._init(params);
 
         bindAdwComboRow(this._ac_profile, settings, 'ac', PROFILE_CHOICES);
         bindAdwComboRow(this._bat_profile, settings, 'bat', PROFILE_CHOICES);
         settings.bind(
-            'threshold', 
-            this._threshold, 
-            'value', 
+            'threshold',
+            this._threshold,
+            'value',
             Gio.SettingsBindFlags.DEFAULT
         );
     }
 });
 
+export default class PowerProfileSwitcherPreferences extends ExtensionPreferences {
+    fillPreferencesWindow(window) {
+        const settings = this.getSettings();
 
-function init() {}
-
-
-function fillPreferencesWindow(window) {
-
-    const settings = ExtensionUtils.getSettings("org.gnome.shell.extensions.power-profile-switcher");
-
-    window.add(new General(settings));
-    
+        window.add(new General(settings));
+    }
 }
