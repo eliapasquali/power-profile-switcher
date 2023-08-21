@@ -33,19 +33,13 @@
                 <property name="description" translatable="yes">Configure the power saving options</property>
 
                 <child>
-                    <object class="AdwActionRow">
+                    <object class="AdwSpinRow" id="threshold">
                         <property name="title" translatable="yes">Power saving threshold</property>
                         <property name="subtitle" translatable="yes">Select battery level to turn on the power saving profile</property>
-                        <property name="activatable-widget">threshold</property>
-                        <child>
-                            <object class="GtkSpinButton" id="threshold">
-                                <property name="valign">center</property>
-                                <property name="adjustment">threshold_adjustment</property>
-                                <property name="numeric">True</property>
-                                <property name="snap-to-ticks">True</property>
-                                <property name="update-policy">if-valid</property>
-                            </object>
-                        </child>
+                        <property name="adjustment">threshold_adjustment</property>
+                        <property name="numeric">True</property>
+                        <property name="snap-to-ticks">True</property>
+                        <property name="update-policy">if-valid</property>
                     </object>
                 </child>
             </object>
