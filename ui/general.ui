@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface domain="org.gnome.shell.extensions.power-profile-switcher">
-    <template class="GeneralPreferences" parent="AdwPreferencesPage">
+    <template class="PowerProfileSwitcherPreferences" parent="AdwPreferencesPage">
         <property name="name">general</property>
         <property name="title" translatable="yes">General</property>
         <property name="icon-name">preferences-other-symbolic</property>

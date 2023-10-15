@@ -28,7 +28,7 @@ function bindAdwComboRow(comboRow, settings, key, map_) {
 }
 
 var General = GObject.registerClass({
-    GTypeName: 'GeneralPreferences',
+    GTypeName: 'PowerProfileSwitcherPreferences',
     Template: GLib.Uri.resolve_relative(import.meta.url, './ui/general.ui', GLib.UriFlags.NONE),
     InternalChildren: [
         'ac_profile',
