@@ -39,7 +39,7 @@ Clone the repo, pack and install the extension.
 ```
 git clone https://github.com/eliapasquali/power-profile-switcher
 cd power-profile-switcher
-gnome-extensions pack
+gnome-extensions pack --extra-source=ui
 gnome-extensions install power-profile-switcher@eliapasquali.github.io.shell-extension.zip
 ```
 After this, the extensions is installed. In order to enable it run the following command or use the Extensions app.
