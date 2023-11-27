@@ -10,7 +10,7 @@ let settings, client, device;
 
 // Checks for changes in settings, must be disconnected in disable
 let batteryPercentageWatcher;
-let ACDefaultWatcher, batteryDefaultWatcher, platformProfileWatcher;
+let ACDefaultWatcher, batteryDefaultWatcher;
 
 let batteryThreshold, ACDefault, batteryDefault, activeProfile, perfDebounceTimerId;
 
@@ -40,9 +40,45 @@ const POWER_PROFILES_OBJECT_PATH = '/net/hadess/PowerProfiles';
 const PowerProfilesIface = FileUtils.loadInterfaceXML('net.hadess.PowerProfiles');
 const PowerProfilesProxy = Gio.DBusProxy.makeProxyWrapper(PowerProfilesIface);
 
+const isOnBat = () => (device?.state === UPower.DeviceState.PENDING_DISCHARGE || device?.state === UPower.DeviceState.DISCHARGING);
+const isLowBat = () => device?.percentage < batteryThreshold;
+
+const profileTransition = {
+    report(profile) {
+        this.effectiveProfile = profile;
+        this.onBat = isOnBat();
+        this.lowBat = isLowBat();
+
+        if (this.requestedProfile && !this.committedProfile && this.effectiveProfile === this.requestedProfile) {
+            this.committedProfile = this.requestedProfile;
+        }
+        if (!profile) {
+            this.effectiveProfile = null;
+            this.requestedProfile = null;
+            this.committedProfile = null;
+        }
+    },
+    request(profile) {
+        const allowed = this.lowBat !== isLowBat() || this.onBat !== isOnBat() || !this.committedProfile;
+        if (allowed) {
+            this.requestedProfile = profile;
+            this.committedProfile = null;
+        }
+        return allowed;
+    },
+    effectiveProfile: null,
+    requestedProfile: null,
+    committedProfile: null,
+
+    onBat: null,
+    lowBat: null,
+};
 
 const switchProfile = (profile) => {
     if (profile === activeProfile) {
+        return;
+    }
+    if (!profileTransition.request(profile)) {
         return;
     }
     try {
@@ -88,13 +124,18 @@ const checkProfile = () => {
         device.state === UPower.DeviceState.PENDING_DISCHARGE ||
         device.state === UPower.DeviceState.DISCHARGING
     ) {
-        nextProfile = device.percentage >= batteryThreshold ? batteryDefault : "power-saver"
+        nextProfile = isLowBat() ? "power-saver" : batteryDefault;
     }
     else {
         nextProfile = ACDefault;
     }
 
     switchProfile(nextProfile);
+}
+
+const onSettingsUpdate = () => {
+    profileTransition.report(null);
+    checkProfile();
 }
 
 const getDefaults = () => {
@@ -104,6 +145,7 @@ const getDefaults = () => {
 }
 
 export default class PowerProfileSwitcher extends Extension {
+    
     constructor(metadata) {
         super(metadata);
     }
@@ -118,17 +160,17 @@ export default class PowerProfileSwitcher extends Extension {
 
         batteryPercentageWatcher = settings.connect(
             "changed::threshold",
-            checkProfile
+            onSettingsUpdate
         );
         
         ACDefaultWatcher = settings.connect(
             "changed::ac",
-            checkProfile
+            onSettingsUpdate
         );
 
         batteryDefaultWatcher = settings.connect(
             "changed::bat",
-            checkProfile
+            onSettingsUpdate
         );
 
         powerManagerCancellable = new Gio.Cancellable();
@@ -151,6 +193,7 @@ export default class PowerProfileSwitcher extends Extension {
                 } else {
                     powerProfileWatcher = powerProfilesProxy.connect('g-properties-changed', (p, properties) => {
                         const payload = properties?.deep_unpack();
+                        const isOnPowerSupply = !isOnBat();
 
                         if (payload?.ActiveProfile) {
                             activeProfile = payload?.ActiveProfile?.unpack();
@@ -158,11 +201,10 @@ export default class PowerProfileSwitcher extends Extension {
                                 GLib.source_remove(perfDebounceTimerId);
                                 perfDebounceTimerId = null;
                             }
+                            if (!payload?.PerformanceDegraded) {
+                                profileTransition.report(activeProfile);
+                            }
                         }
-
-                        const isOnPowerSupply = device?.power_supply ||
-                            device?.state !== UPower.DeviceState.PENDING_DISCHARGE ||
-                            device?.state !== UPower.DeviceState.DISCHARGING;
 
                         if (isOnPowerSupply && payload?.PerformanceDegraded) {
                             try {
@@ -189,6 +231,8 @@ export default class PowerProfileSwitcher extends Extension {
     }
 
     disable() {
+        switchProfile("balanced");
+
         settings.disconnect(batteryPercentageWatcher);
         settings.disconnect(ACDefaultWatcher);
         settings.disconnect(batteryDefaultWatcher);
@@ -203,11 +247,11 @@ export default class PowerProfileSwitcher extends Extension {
             GLib.source_remove(perfDebounceTimerId);
             perfDebounceTimerId = null;
         }
+        profileTransition.report(null);
 
         settings = null;
         client = null;
         device = null;
         activeProfile = null;
-        switchProfile("balanced");
     }
 }
