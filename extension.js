@@ -176,7 +176,7 @@ export default class PowerProfileSwitcher extends Extension {
                                     });
                                 }
                                 else if (reason) {
-                                    log(`ActiveProfile: ${activeProfile}, PerformanceDegraded: ${reason}`);
+                                    console.log(`ActiveProfile: ${activeProfile}, PerformanceDegraded: ${reason}`);
                                 }
                             }
                             catch (e) {
@@ -207,6 +207,8 @@ export default class PowerProfileSwitcher extends Extension {
         settings = null;
         client = null;
         device = null;
+        powerManagerCancellable = null;
+        powerProfilesCancellable = null;
         activeProfile = null;
         switchProfile("balanced");
     }
