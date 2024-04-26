@@ -34,6 +34,7 @@ var General = GObject.registerClass({
         'ac_profile',
         'bat_profile',
         'threshold',
+        'locked_profile',
     ],
 }, class General extends Adw.PreferencesPage {
     _init(settings, params = {}) {
@@ -47,6 +48,7 @@ var General = GObject.registerClass({
             'value',
             Gio.SettingsBindFlags.DEFAULT
         );
+        bindAdwComboRow(this._locked_profile, settings, 'locked', PROFILE_CHOICES);
     }
 });
 

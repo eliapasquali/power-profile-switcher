@@ -24,6 +24,14 @@
                         <property name="model">platform_profile_model</property>
                     </object>
                 </child>
+
+                <child>
+                    <object class="AdwComboRow" id="locked_profile">
+                        <property name="title" translatable="yes">Locked screen profile</property>
+                        <property name="subtitle" translatable="yes">Select the default profile to use when screen is locked</property>
+                        <property name="model">platform_profile_model</property>
+                    </object>
+                </child>
             </object>
         </child>
 
@@ -53,7 +61,6 @@
             <item translatable="yes">Power Saver</item>
         </items>
     </object>
-
 
     <object class="GtkAdjustment" id="threshold_adjustment">
         <property name="page-increment">5.0</property>
