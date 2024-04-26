@@ -11,6 +11,11 @@
       <summary>On battery profile</summary>
       <description>Select the default profile to use when running on battery</description>
     </key>
+    <key name="locked" type="s">
+      <default>"balanced"</default>
+      <summary>Locked screen profile</summary>
+      <description>Select the default profile to use when screen is locked</description>
+    </key>
     <key name="threshold" type="i">
       <default>25</default>
       <summary>Power saving threshold</summary>

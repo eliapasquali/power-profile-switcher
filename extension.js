@@ -10,9 +10,9 @@ let settings, client, device;
 
 // Checks for changes in settings, must be disconnected in disable
 let batteryPercentageWatcher;
-let ACDefaultWatcher, batteryDefaultWatcher, platformProfileWatcher;
+let ACDefaultWatcher, batteryDefaultWatcher, lockedDefaultWatcher;
 
-let batteryThreshold, ACDefault, batteryDefault, activeProfile, perfDebounceTimerId;
+let batteryThreshold, ACDefault, batteryDefault, lockedDefault, activeProfile, perfDebounceTimerId;
 
 let powerManagerProxy, powerManagerCancellable, batteryThresholdWatcher;
 let powerProfilesProxy, powerProfilesCancellable, powerProfileWatcher;
@@ -101,6 +101,7 @@ const getDefaults = () => {
     ACDefault = settings.get_string("ac");
     batteryDefault = settings.get_string("bat");
     batteryThreshold = settings.get_int("threshold");
+    lockedDefault = settings.get_string("locked");
 }
 
 export default class PowerProfileSwitcher extends Extension {
@@ -128,6 +129,11 @@ export default class PowerProfileSwitcher extends Extension {
 
         batteryDefaultWatcher = settings.connect(
             "changed::bat",
+            checkProfile
+        );
+
+        lockedDefaultWatcher = settings.connect(
+            "changed::locked",
             checkProfile
         );
 
@@ -192,6 +198,7 @@ export default class PowerProfileSwitcher extends Extension {
         settings.disconnect(batteryPercentageWatcher);
         settings.disconnect(ACDefaultWatcher);
         settings.disconnect(batteryDefaultWatcher);
+        settings.disconnect(lockedDefaultWatcher);
 
         powerManagerProxy.disconnect(batteryThresholdWatcher);
         powerManagerCancellable.cancel();
@@ -210,6 +217,6 @@ export default class PowerProfileSwitcher extends Extension {
         powerManagerCancellable = null;
         powerProfilesCancellable = null;
         activeProfile = null;
-        switchProfile("balanced");
+        switchProfile(lockedDefault);
     }
 }
