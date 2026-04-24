@@ -1,6 +1,13 @@
 # Power Profile Switcher
 GNOME Shell extension to automatically switch between power profiles based on power supply
 
+## Recent changes
+
+- Added GNOME Shell 48 and 49 compatibility.
+- Improved power profile detection on systems where UPower reports an unknown or fully charged state while on AC power.
+- Added fallback handling for the PowerProfiles DBus interface name used across GNOME versions.
+- Improved cleanup and error logging when the extension is disabled or DBus calls fail.
+
 ## Settings
 ![Settings window](.github/img/settings.png)
 
@@ -48,7 +55,7 @@ gnome-extensions enable power-profile-switcher@eliapasquali.github.io
 ```
 
 ## GNOME Version Support
-This extensions is developed and tested on Arch, with GNOME 43 on Wayland.
+This extension supports GNOME Shell 45 through 49.
 
 ## Contribution
 Contribution to this project are welcome
