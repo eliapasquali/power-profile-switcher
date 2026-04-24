@@ -2,8 +2,8 @@
     "uuid": "power-profile-switcher@eliapasquali.github.io",
     "name": "Power Profile Switcher",
     "description": "Automatically switch between power profiles based on power supply and percentage.",
-    "version": 12,
-    "shell-version": ["45", "46", "47"],
+    "version": 13,
+    "shell-version": ["45", "46", "47", "48", "49"],
     "url": "https://github.com/eliapasquali/power-profile-switcher",
     "gettext-domain": "org.gnome.shell.extensions.power-profile-switcher",
     "settings-schema": "org.gnome.shell.extensions.power-profile-switcher"

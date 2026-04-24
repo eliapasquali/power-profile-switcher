@@ -3,14 +3,13 @@ import GLib from 'gi://GLib';
 import UPower from 'gi://UPowerGlib';
 
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import * as FileUtils from 'resource:///org/gnome/shell/misc/fileUtils.js';
+import {loadInterfaceXML} from 'resource:///org/gnome/shell/misc/fileUtils.js';
 
 let settings, client, device;
 
 // Checks for changes in settings, must be disconnected in disable
 let batteryPercentageWatcher;
-let ACDefaultWatcher, batteryDefaultWatcher, platformProfileWatcher;
+let ACDefaultWatcher, batteryDefaultWatcher;
 
 let batteryThreshold, ACDefault, batteryDefault, activeProfile, perfDebounceTimerId;
 
@@ -34,10 +33,24 @@ const DisplayDeviceInterface = '<node> \
 
 const PowerManagerProxy = Gio.DBusProxy.makeProxyWrapper(DisplayDeviceInterface);
 
+// power-profiles-daemon registers both bus names; prefer the newer freedesktop one
+// and fall back to the legacy net.hadess.PowerProfiles for older systems.
 const POWER_PROFILES_BUS_NAME = 'net.hadess.PowerProfiles';
 const POWER_PROFILES_OBJECT_PATH = '/net/hadess/PowerProfiles';
 
-const PowerProfilesIface = FileUtils.loadInterfaceXML('net.hadess.PowerProfiles');
+// GNOME 47+ ships the interface XML under the org.freedesktop.UPower.PowerProfiles key;
+// older versions used net.hadess.PowerProfiles. Try both and fall back to an inline definition.
+let PowerProfilesIface = loadInterfaceXML('org.freedesktop.UPower.PowerProfiles') ||
+                         loadInterfaceXML('net.hadess.PowerProfiles') ||
+                         `<node>
+                           <interface name="net.hadess.PowerProfiles">
+                             <property name="ActiveProfile" type="s" access="readwrite"/>
+                             <property name="PerformanceDegraded" type="s" access="read"/>
+                             <property name="Profiles" type="aa{sv}" access="read"/>
+                             <property name="Actions" type="as" access="read"/>
+                           </interface>
+                         </node>`;
+
 const PowerProfilesProxy = Gio.DBusProxy.makeProxyWrapper(PowerProfilesIface);
 
 
@@ -64,12 +77,12 @@ const switchProfile = (profile) => {
                 try {
                     connection.call_finish(res);
                 } catch (e) {
-                    logError(e);
+                    console.error(`Power Profile Switcher: failed to switch profile: ${e.message}`);
                 }
             }
         );
     } catch (e) {
-        logError(e);
+        console.error(`Power Profile Switcher: failed to switch profile: ${e.message}`);
     }
 }
 
@@ -77,20 +90,20 @@ const checkProfile = () => {
     getDefaults();
 
     let nextProfile = "balanced";
-        
-    if (
-        powerManagerProxy.State === UPower.DeviceState.UNKNOWN ||
-        client.on_battery === undefined ||
-        device.percentage === undefined
-    ) {
-        nextProfile = "balanced";
-    } else if(
-        device.state === UPower.DeviceState.PENDING_DISCHARGE ||
-        device.state === UPower.DeviceState.DISCHARGING
-    ) {
-        nextProfile = device.percentage >= batteryThreshold ? batteryDefault : "power-saver"
-    }
-    else {
+
+    // Determine if the device is on battery (discharging).
+    // On desktop PCs, UPower may report state UNKNOWN or FULLY_CHARGED even on AC.
+    // We consider a device to be on battery only when it is explicitly discharging
+    // or pending discharge.
+    const onBattery =
+        device?.state === UPower.DeviceState.DISCHARGING ||
+        device?.state === UPower.DeviceState.PENDING_DISCHARGE;
+
+    if (onBattery) {
+        const percentage = device?.percentage ?? 100;
+        nextProfile = percentage >= batteryThreshold ? batteryDefault : 'power-saver';
+    } else {
+        // On AC, fully charged, or unknown state (e.g. desktop without battery)
         nextProfile = ACDefault;
     }
 
@@ -120,7 +133,7 @@ export default class PowerProfileSwitcher extends Extension {
             "changed::threshold",
             checkProfile
         );
-        
+
         ACDefaultWatcher = settings.connect(
             "changed::ac",
             checkProfile
@@ -132,22 +145,29 @@ export default class PowerProfileSwitcher extends Extension {
         );
 
         powerManagerCancellable = new Gio.Cancellable();
-        powerManagerProxy = new PowerManagerProxy(Gio.DBus.system, UPOWER_BUS_NAME, UPOWER_OBJECT_PATH,
+        powerManagerProxy = new PowerManagerProxy(
+            Gio.DBus.system,
+            UPOWER_BUS_NAME,
+            UPOWER_OBJECT_PATH,
             (proxy, error) => {
                 if (error) {
-                    logError(error.message);
+                    console.error(`Power Profile Switcher: UPower proxy error: ${error.message}`);
                     return;
                 }
                 batteryThresholdWatcher = powerManagerProxy.connect('g-properties-changed', checkProfile);
                 checkProfile();
-            }, powerManagerCancellable);
-
+            },
+            powerManagerCancellable
+        );
 
         powerProfilesCancellable = new Gio.Cancellable();
-        powerProfilesProxy = new PowerProfilesProxy(Gio.DBus.system, POWER_PROFILES_BUS_NAME, POWER_PROFILES_OBJECT_PATH,
+        powerProfilesProxy = new PowerProfilesProxy(
+            Gio.DBus.system,
+            POWER_PROFILES_BUS_NAME,
+            POWER_PROFILES_OBJECT_PATH,
             (proxy, error) => {
                 if (error) {
-                    logError(error.message);
+                    console.error(`Power Profile Switcher: PowerProfiles proxy error: ${error.message}`);
                 } else {
                     powerProfileWatcher = powerProfilesProxy.connect('g-properties-changed', (p, properties) => {
                         const payload = properties?.deep_unpack();
@@ -160,11 +180,11 @@ export default class PowerProfileSwitcher extends Extension {
                             }
                         }
 
-                        const isOnPowerSupply = device?.power_supply ||
-                            device?.state !== UPower.DeviceState.PENDING_DISCHARGE ||
-                            device?.state !== UPower.DeviceState.DISCHARGING;
+                        const onBattery =
+                            device?.state === UPower.DeviceState.DISCHARGING ||
+                            device?.state === UPower.DeviceState.PENDING_DISCHARGE;
 
-                        if (isOnPowerSupply && payload?.PerformanceDegraded) {
+                        if (!onBattery && payload?.PerformanceDegraded) {
                             try {
                                 const reason = payload?.PerformanceDegraded?.unpack();
 
@@ -174,30 +194,51 @@ export default class PowerProfileSwitcher extends Extension {
                                         perfDebounceTimerId = null;
                                         return GLib.SOURCE_REMOVE;
                                     });
+                                } else if (reason) {
+                                    console.log(`Power Profile Switcher: ActiveProfile=${activeProfile}, PerformanceDegraded=${reason}`);
                                 }
-                                else if (reason) {
-                                    console.log(`ActiveProfile: ${activeProfile}, PerformanceDegraded: ${reason}`);
-                                }
-                            }
-                            catch (e) {
-                                logError(e)
+                            } catch (e) {
+                                console.error(`Power Profile Switcher: error handling PerformanceDegraded: ${e.message}`);
                             }
                         }
                     });
                 }
-            }, powerProfilesCancellable);
+            },
+            powerProfilesCancellable
+        );
     }
 
     disable() {
-        settings.disconnect(batteryPercentageWatcher);
-        settings.disconnect(ACDefaultWatcher);
-        settings.disconnect(batteryDefaultWatcher);
+        if (batteryPercentageWatcher) {
+            settings.disconnect(batteryPercentageWatcher);
+            batteryPercentageWatcher = null;
+        }
+        if (ACDefaultWatcher) {
+            settings.disconnect(ACDefaultWatcher);
+            ACDefaultWatcher = null;
+        }
+        if (batteryDefaultWatcher) {
+            settings.disconnect(batteryDefaultWatcher);
+            batteryDefaultWatcher = null;
+        }
 
-        powerManagerProxy.disconnect(batteryThresholdWatcher);
-        powerManagerCancellable.cancel();
+        if (batteryThresholdWatcher && powerManagerProxy) {
+            powerManagerProxy.disconnect(batteryThresholdWatcher);
+            batteryThresholdWatcher = null;
+        }
+        if (powerManagerCancellable) {
+            powerManagerCancellable.cancel();
+            powerManagerCancellable = null;
+        }
 
-        powerProfilesProxy.disconnect(powerProfileWatcher);
-        powerProfilesCancellable.cancel();
+        if (powerProfileWatcher && powerProfilesProxy) {
+            powerProfilesProxy.disconnect(powerProfileWatcher);
+            powerProfileWatcher = null;
+        }
+        if (powerProfilesCancellable) {
+            powerProfilesCancellable.cancel();
+            powerProfilesCancellable = null;
+        }
 
         if (perfDebounceTimerId) {
             GLib.source_remove(perfDebounceTimerId);
@@ -207,9 +248,8 @@ export default class PowerProfileSwitcher extends Extension {
         settings = null;
         client = null;
         device = null;
-        powerManagerCancellable = null;
-        powerProfilesCancellable = null;
         activeProfile = null;
-        switchProfile("balanced");
+        powerManagerProxy = null;
+        powerProfilesProxy = null;
     }
 }
